@@ -1,13 +1,14 @@
-import { ScreenContent } from 'components/ScreenContent';
-import { StatusBar } from 'expo-status-bar';
-
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import AppNavigator from './navigation';
+import { AuthProvider } from "hooks/useAuth";
 import './global.css';
 
 export default function App() {
   return (
-    <>
-      <ScreenContent title="Home" path="App.tsx"></ScreenContent>
-      <StatusBar style="auto" />
-    </>
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <AuthProvider>
+        <AppNavigator />
+      </AuthProvider>
+    </GestureHandlerRootView>
   );
 }
