@@ -6,7 +6,10 @@
 
     "baseUrl": ".",
     "paths": {
-      "~/*": ["src/*"]
+      "hooks/*": ["hooks/*"],
+      "components/*": ["components/*"],
+      "services/*": ["services/*"],
+      "screens/*": ["screens/*"]
     }
   }
 }
