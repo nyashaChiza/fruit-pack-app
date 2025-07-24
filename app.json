@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "my-expo-app",
-    "slug": "my-expo-app",
+    "name": "Fruit-Pack",
+    "slug": "Fruit-Pack",
     "version": "1.0.0",
     "web": {
       "favicon": "./assets/favicon.png"
@@ -10,7 +10,8 @@
       "tsconfigPaths": true
     },
     "plugins": [
-      "expo-secure-store"
+      "expo-secure-store",
+      "react-native-maps"
     ],
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -24,9 +25,13 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "infoPlist": {
+        "NSLocationWhenInUseUsageDescription": "We need your location to show where to deliver your fruit."
+      }
     },
     "android": {
+      "permissions": ["ACCESS_FINE_LOCATION"],
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"

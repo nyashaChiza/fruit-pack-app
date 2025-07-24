@@ -12,14 +12,13 @@ import {
   ActivityIndicator,
 } from "react-native";
 import BottomNavigation from "../../components/common/BottomNavigation";
-import { LinearGradient } from "expo-linear-gradient";
-import { useRouter } from "expo-router";
+import { useNavigation } from '@react-navigation/native';
 import * as FileSystem from "expo-file-system";
-import { Fruit, Category } from "../../types";
+import { Product, Category } from "../../types";
 import api from "../../services/api";
 import { getToken } from "../../services/authServices";
 
-const { width } = Dimensions.get("window");
+
 
 // Dummy ads instead of banner images
 const dummyAds = [
@@ -29,11 +28,11 @@ const dummyAds = [
 ];
 
 export default function Home() {
-  const router = useRouter();
+  const navigation = useNavigation();
 
   const [token, setToken] = useState<string | null>(null);
   const [categories, setCategories] = useState<Category[]>([]);
-  const [fruits, setFruits] = useState<Fruit[]>([]);
+  const [fruits, setFruits] = useState<Product[]>([]);
   const [cachedImages, setCachedImages] = useState<Record<string, string>>({});
   const [searchTerm, setSearchTerm] = useState("");
   const [loading, setLoading] = useState(true);
@@ -106,16 +105,14 @@ export default function Home() {
     fruit.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  const handleFruitPress = (item: any) => {
-    router.push({
-      pathname: "screens/details/[id]",
-      params: { id: item.id },
-    });
-  };
+
+  const handlePressProduct = (SelectedProduct:Product) => {
+  navigation.navigate('ProductDetails', { SelectedProduct });
+};
 
   const renderFruitItem = ({ item }: { item: any }) => (
     <TouchableOpacity
-      onPress={() => handleFruitPress(item)}
+      onPress={() => handlePressProduct(item)}
       className="flex-row bg-white rounded-2xl mb-4 shadow-md overflow-hidden"
     >
       <Image
@@ -155,10 +152,7 @@ export default function Home() {
 
   return (
     <SafeAreaView className="flex-1 bg-green-50">
-      <LinearGradient
-        colors={["#f2f7f5ff", "#edefe9ff"]}
-        className="flex-1"
-      >
+
         <View className="p-4 pb-20">
           {/* Search Box */}
           <View className="mb-6">
@@ -225,7 +219,6 @@ export default function Home() {
 
         {/* Fixed Bottom Navigation */}
         <BottomNavigation />
-      </LinearGradient>
     </SafeAreaView>
   );
 }
