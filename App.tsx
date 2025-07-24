@@ -1,8 +1,8 @@
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { AuthProvider } from 'hooks/useAuth';
 import { StripeProvider } from '@stripe/stripe-react-native';
-import { CartProvider } from './context/CartContext';
-import './global.css'; // Tailwind / NativeWind config
+import { CartProvider } from 'hooks/useCart';
+import './global.css';
 import AppNavigator from './navigation';
 
 export default function App() {
