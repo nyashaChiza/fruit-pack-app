@@ -9,7 +9,7 @@ import {
   ActivityIndicator,
 } from "react-native";
 import { useRoute } from '@react-navigation/native';
-import { LinearGradient } from "expo-linear-gradient";;
+import { LinearGradient } from "expo-linear-gradient";
 import * as FileSystem from "expo-file-system";
 import { useCart } from "../../hooks/useCart";
 import { getToken } from "../../services/authServices";

@@ -4,7 +4,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { ActivityIndicator } from "react-native";
 import { Feather } from "@expo/vector-icons";
 import { MotiView } from "moti";
-import BottomNavigation from "@/components/BottomNavigation";
+import BottomNavigation from "../../components/common/BottomNavigation";
 import api from "../../services/api";
 import { getToken } from "../../services/authServices";
 import { getUserId } from "../../services/userServices";
