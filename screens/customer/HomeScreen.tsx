@@ -11,6 +11,7 @@ import {
   Dimensions,
   ActivityIndicator,
 } from "react-native";
+import { Feather, MaterialIcons } from '@expo/vector-icons';
 import BottomNavigation from "../../components/common/BottomNavigation";
 import { useNavigation } from '@react-navigation/native';
 import * as FileSystem from "expo-file-system";
@@ -25,9 +26,10 @@ const dummyAds = [
   { id: "ad1", title: "Fresh Mangoes Sale!", description: "Up to 30% off" },
   { id: "ad2", title: "Organic Apples", description: "Only this week" },
   { id: "ad3", title: "Exotic Fruits Delivered", description: "Try now!" },
+  { id: "ad4", title: "Seasonal Discounts", description: "Limited time offer" },
 ];
 
-export default function Home() {
+export default function CustomerHomeScreen() {
   const navigation = useNavigation();
 
   const [token, setToken] = useState<string | null>(null);
@@ -101,13 +103,13 @@ export default function Home() {
 
 
 
-  const filteredFruits = fruits.filter((fruit: Fruit) =>
+  const filteredFruits = fruits.filter((fruit: Product) =>
     fruit.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
 
   const handlePressProduct = (SelectedProduct:Product) => {
-  navigation.navigate('ProductDetails', { SelectedProduct });
+  navigation.navigate('ProductDetail', { SelectedProduct });
 };
 
   const renderFruitItem = ({ item }: { item: any }) => (
@@ -150,75 +152,72 @@ export default function Home() {
     );
   }
 
-  return (
-    <SafeAreaView className="flex-1 bg-green-50">
+return (
+  <SafeAreaView className="flex-1 bg-green-50">
+  {/* 🌿 Top Section: Search + Ads Carousel */}
+  <View className="p-4 pb-0">
+    {/* 🔍 Search Box */}
+    <View className="flex-row items-center mb-4 bg-white rounded-xl px-4 py-3">
+      <Feather name="search" size={20} color="#4CAF50" style={{ marginRight: 8 }} />
+      <TextInput
+        placeholder="Search fruits..."
+        placeholderTextColor="#4CAF50"
+        className="flex-1 text-green-800 text-base"
+        value={searchTerm}
+        onChangeText={setSearchTerm}
+        autoCapitalize="none"
+      />
+    </View>
 
-        <View className="p-4 pb-20">
-          {/* Search Box */}
-          <View className="mb-6">
-            <TextInput
-              placeholder="Search fruits.."
-              placeholderTextColor="#4CAF50"
-              className="bg-white rounded-xl px-4 py-3 text-green-800 text-base"
-              value={searchTerm}
-              onChangeText={setSearchTerm}
-              autoCapitalize="none"
-            />
-          </View>
-
-          {/* Dummy Ads Carousel */}
-          <ScrollView
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            className="mb-8"
-          >
-            {dummyAds.map((ad) => (
-              <View
-                key={ad.id}
-                className="w-72 h-40 bg-green-300 rounded-2xl mr-4 p-5 justify-center "
-              >
-                <Text className="text-white font-bold text-xl mb-2">{ad.title}</Text>
-                <Text className="text-white text-lg">{ad.description}</Text>
-              </View>
-            ))}
-          </ScrollView>
-
-          {/* Categories */}
-          <View className="mb-8">
-            <Text className="text-green-900 font-semibold text-xl mb-3">Categories</Text>
-            <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-              {categories.map((cat: any) => (
-                <View
-                  key={cat.id}
-                  className="bg-white rounded-xl px-5 py-3 mr-4 items-center justify-center"
-                >
-                  <Text className="text-green-700 text-lg mb-1">{cat.icon}</Text>
-                  <Text className="text-green-800 font-medium">{cat.name}</Text>
-                </View>
-              ))}
-            </ScrollView>
-          </View>
-
-          {/* Popular Fruits */}
-          <View>
-            <Text className="text-green-900 font-semibold text-xl mb-4">
-              Popular Fruits
-            </Text>
-            <FlatList
-              data={filteredFruits}
-              renderItem={renderFruitItem}
-              keyExtractor={(item) => item.id.toString()}
-              scrollEnabled={true}
-              initialNumToRender={8}
-              windowSize={10}
-              maxToRenderPerBatch={8}
-              className="mb-10"
-            />
-          </View>
+    {/* 🧃 Ad Carousel */}
+    <ScrollView horizontal showsHorizontalScrollIndicator={false} className="mb-4">
+      {dummyAds.map((ad) => (
+        <View key={ad.id} className="w-72 h-40 bg-green-300 rounded-2xl mr-4 p-5 justify-center shadow-sm">
+          <Text className="text-white font-bold text-3xl mb-2">
+            <Feather name="info" size={22} color="white" /> {ad.title}
+          </Text>
+          <Text className="text-white text-lg">{ad.description}</Text>
         </View>
+      ))}
+    </ScrollView>
+  </View>
 
-        {/* Fixed Bottom Navigation */}
-        <BottomNavigation />
-    </SafeAreaView>
-  );
+  {/* 🍍 Scrollable Middle */}
+  <ScrollView className="px-4">
+    {/* 📂 Categories */}
+    <View className="mb-8">
+      <View className="flex-row items-center mb-3">
+        <Feather name="grid" size={20} color="green" />
+        <Text className="text-green-900 font-semibold text-xl ml-2">Categories</Text>
+      </View>
+      <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+        {categories.map((cat: any) => (
+          <View key={cat.id} className="bg-white rounded-xl px-5 py-3 mr-4 items-center justify-center ">
+            <View className="mb-1">
+              {typeof cat.icon === 'string' ? (
+                <Text className="text-green-700 text-lg">{cat.icon}</Text>
+              ) : (
+                cat.icon
+              )}
+            </View>
+            <Text className="text-green-800 font-medium">{cat.name}</Text>
+          </View>
+        ))}
+      </ScrollView>
+    </View>
+
+    {/* 🍎 Popular Fruits */}
+    <View className="pb-20">
+      <View className="flex-row items-center mb-4">
+        <Feather name="star" size={20} color="green" />
+        <Text className="text-green-900 font-semibold text-xl ml-2">Popular Fruits</Text>
+      </View>
+      {filteredFruits.map((item) => renderFruitItem({ item }))}
+    </View>
+  </ScrollView>
+
+  {/* 📱 Fixed Navigation */}
+  <BottomNavigation />
+</SafeAreaView>
+);
 }

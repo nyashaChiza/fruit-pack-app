@@ -5,6 +5,7 @@ import { getToken } from "./authServices";
 import { CartItem } from '../types';
 import { Router } from 'expo-router/build/hooks';
 
+
 type Prop = {
   name: string;
   address: string;
@@ -52,8 +53,8 @@ export const placeOrder = async ({
     const payload = {
       full_name: name,
       address,
-      latitude,
-      longitude,
+      latitude : 0,
+      longitude:0,
       phone,
       payment_method: selectedMethod,
       items: cartItems.map(item => ({

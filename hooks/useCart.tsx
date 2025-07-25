@@ -1,5 +1,5 @@
 // hooks/useCart.tsx
-import React, { createContext, useContext, useState, ReactNode } from "react";
+import  { createContext, useContext, useState, ReactNode } from "react";
 
 export type CartItem = {
   id: number;
@@ -66,11 +66,6 @@ export const useCart = (): CartContextType => {
   if (!context)
     throw new Error("useCart must be used within a CartProvider");
   return context;
-};
-
-export const CartItems = () => {
-  const { cart } = useCart();
-  return cart;
 };
 
 

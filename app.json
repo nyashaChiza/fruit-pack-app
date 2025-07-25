@@ -11,7 +11,7 @@
     },
     "plugins": [
       "expo-secure-store",
-      "react-native-maps"
+      // "react-native-maps"
     ],
     "orientation": "portrait",
     "icon": "./assets/icon.png",

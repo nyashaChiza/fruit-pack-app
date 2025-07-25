@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -8,8 +8,9 @@ import {
   Alert,
   ActivityIndicator,
 } from "react-native";
+
+import { MaterialIcons, Feather } from '@expo/vector-icons';
 import { useRoute } from '@react-navigation/native';
-import { LinearGradient } from "expo-linear-gradient";
 import * as FileSystem from "expo-file-system";
 import { useCart } from "../../hooks/useCart";
 import { getToken } from "../../services/authServices";
@@ -21,8 +22,8 @@ import { SafeAreaView } from "react-native-safe-area-context";
 export default function ProductDetailScreen() {
 
 
-const route = useRoute();
-const { SelectedProduct } = route.params;
+  const route = useRoute();
+  const { SelectedProduct } = route.params;
 
 
   const [product, setProduct] = useState<Product | null>(null);
@@ -46,7 +47,8 @@ const { SelectedProduct } = route.params;
 
   useEffect(() => {
     const fetchProduct = async () => {
-      if (!token || !id) return;
+      if (!token || !SelectedProduct?.id) return;
+
       try {
         api.defaults.headers.common["Authorization"] = `Bearer ${token}`;
         const res = await api.get(`/products/${SelectedProduct.id}`);
@@ -119,56 +121,70 @@ const { SelectedProduct } = route.params;
   }
 
   return (
-    <SafeAreaView className="flex-1">
-      
-        <ScrollView className="space-y-4">
-          {loadingImage ? (
-            <ActivityIndicator size="large" color="#ebf0ebff" />
-          ) : localImageUri ? (
-            <Image
-              source={{ uri: localImageUri }}
-              className="w-full h-72 rounded-2xl object-cover"
-            />
-          ) : (
-            <View className="h-72 justify-center items-center bg-gray-200 rounded-2xl">
-              <Text className="text-gray-500">Image not available</Text>
-            </View>
+    <SafeAreaView className="flex-1 bg-green-50">
+      {/* Scrollable Image */}
+      <ScrollView className="space-y-4">
+        {loadingImage ? (
+          <ActivityIndicator size="large" color="#ebf0ebff" />
+        ) : localImageUri ? (
+          <Image
+            source={{ uri: localImageUri }}
+            className="mx-3 my-2 h-72 rounded-2xl object-cover"
+          />
+        ) : (
+          <View className="h-72 justify-center items-center bg-gray-200 rounded-2xl mx-3 my-2">
+            <Text className="text-gray-500">Image not available</Text>
+          </View>
+        )}
+      </ScrollView>
+
+      {/* Product Details fixed near bottom */}
+
+
+      <View className="absolute bottom-40 left-4 right-4">
+        <View className="bg-white p-5 rounded-2xl shadow-md space-y-2">
+          {/* Product Name */}
+          <View className="flex-row items-center justify-between">
+            <Text className="text-xl font-bold text-green-800">{product.name}</Text>
+            <MaterialIcons name="local-grocery-store" size={22} color="green" />
+          </View>
+
+          {/* Price & Unit */}
+          <Text className="text-lg text-gray-700 flex-row items-center">
+            <Feather name="tag" size={16} color="gray" /> R{Number(product.price).toFixed(2)} / {product.unit}
+          </Text>
+
+          {/* Discount */}
+          {product.discount && (
+            <Text className="text-sm text-red-500 font-semibold flex-row items-center">
+              <MaterialIcons name="discount" size={16} color="red" /> {Number(product.discount) * 100}% OFF
+            </Text>
           )}
 
-          <View className="bg-white p-5 rounded-2xl shadow-md space-y-2">
-            <Text className="text-xl font-bold text-green-800">{product.name}</Text>
-            <Text className="text-lg text-gray-700">
-              R{Number(product.price).toFixed(2)} / {product.unit}
-            </Text>
-            {product.discount && (
-              <Text className="text-sm text-red-500 font-semibold">
-                {Number(product.discount) * 100}% OFF
-              </Text>
-            )}
-            <Text className="text-sm text-gray-700">{product.description}</Text>
-            <Text className="text-sm text-gray-500 italic">
-              Category: {product.category_name}
-            </Text>
+          {/* Description */}
+          <Text className="text-sm text-gray-700">
+            <Feather name="info" size={14} color="gray" /> {product.description}
+          </Text>
 
-            <TouchableOpacity
-              className="bg-green-600 p-3 rounded-xl items-center mt-4"
-              onPress={handleAddToCart}
-            >
-              <Text className="text-white font-semibold text-base">🛒 Add to Cart</Text>
-            </TouchableOpacity>
+          {/* Category */}
+          <Text className="text-sm text-gray-500 italic flex-row items-center">
+            <Feather name="tag" size={14} color="gray" /> Category: {product.category_name}
+          </Text>
 
-            <TouchableOpacity
-              className="mt-3 items-center"
-              onPress={() => route.back()}
-            >
-              <Text className="text-green-700 font-semibold">Back</Text>
-            </TouchableOpacity>
-          </View>
-        </ScrollView>
+          {/* Add to Cart */}
+          <TouchableOpacity
+            className="bg-green-600 p-3 rounded-xl items-center mt-4 flex-row justify-center"
+            onPress={handleAddToCart}
+          >
+            <Feather name="shopping-cart" size={18} color="white" style={{ marginRight: 6 }} />
+            <Text className="text-white font-semibold text-base">Add to Cart</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
 
-        {/* Bottom Nav */}
-        <BottomNavigation />
-      
+      {/* Bottom Nav */}
+      <BottomNavigation />
     </SafeAreaView>
+
   );
 }

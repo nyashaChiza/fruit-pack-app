@@ -14,13 +14,21 @@ export type Category = {
 };
 
 export type Order = {
-  id: string | number;
-  order_number: string;
-  total: number;
-  status: string;
-  created_at: string;
-  updated_at: string;
+  id: number;
+  driver_id: number;
+  user_id: number;
+  customer_name: string;
+  customer_phone: string;
+  destination_address: string;
+  destination_latitude: number;
+  destination_longitude: number;
+  delivery_status: string;
+  payment_status: string;
+  payment_method: string;
+  created: string;
+  updated: string;
   items: Product[];
+  total: number;
 };
 
 export type CartItem = {

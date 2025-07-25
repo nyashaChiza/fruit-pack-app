@@ -1,57 +1,30 @@
-import { View, Text, TouchableOpacity, StyleSheet, Dimensions } from "react-native";
-import { useRouter } from "expo-router";
+import { View, TouchableOpacity, Dimensions } from "react-native";
+import { useNavigation } from "@react-navigation/native";
+import { Ionicons } from "@expo/vector-icons";
 import { logout } from "../../services/authServices";
 
 export default function BottomNavigation() {
-  const router = useRouter();
+  const navigation = useNavigation();
 
   return (
-    <View style={styles.container}>
-      <TouchableOpacity onPress={() => router.push("/screens/home")}>
-        <Text style={styles.text}>🏠 Home</Text>
+    <View className="absolute bottom-2 left-0 right-0 bg-white flex-row justify-around items-center py-6 px-4 border-t border-gray-300 shadow-md w-full z-50">
+      <TouchableOpacity onPress={() => navigation.navigate("CustomerHome")}>
+        <Ionicons name="home-outline" size={28} color="#047857" />
       </TouchableOpacity>
-      <TouchableOpacity onPress={() => router.push("/screens/cart")}>
-        <Text style={styles.text}>🛒 Cart</Text>
+      <TouchableOpacity onPress={() => navigation.navigate("Cart")}>
+        <Ionicons name="cart-outline" size={28} color="#047857" />
       </TouchableOpacity>
-      <TouchableOpacity onPress={() => router.push("/screens/orders")}>
-        <Text style={styles.text}>📦 Orders</Text>
+      <TouchableOpacity onPress={() => navigation.navigate("OrderList")}>
+        <Ionicons name="cube-outline" size={28} color="#047857" />
       </TouchableOpacity>
       <TouchableOpacity
         onPress={async () => {
           await logout();
-          router.replace("/screens/login");
+          navigation.replace("LoginScreen");
         }}
       >
-        <Text style={styles.text}>👤 Logout</Text>
+        <Ionicons name="log-out-outline" size={28} color="#047857" />
       </TouchableOpacity>
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    position: "absolute",
-    left: 0,
-    right: 0,
-    bottom: 0,
-    backgroundColor: "#fff",
-    flexDirection: "row",
-    justifyContent: "space-around",
-    alignItems: "center",
-    paddingVertical: 12,
-    borderTopWidth: 1,
-    borderTopColor: "#D1D5DB",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: -2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 10,
-    width: Dimensions.get("window").width,
-    zIndex: 100,
-  },
-  text: {
-    color: "#047857",
-    fontWeight: "600",
-    fontSize: 18,
-  },
-});
