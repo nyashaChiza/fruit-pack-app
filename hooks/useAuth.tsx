@@ -1,6 +1,7 @@
 import { createContext, useContext, useEffect, useState } from 'react';
 import { login, logout, getToken } from '../services/authServices';
 import { getUserDetails } from '../services/userServices';
+import * as SecureStore from 'expo-secure-store';
 import api from '../services/api';
 
 type User = {
@@ -25,12 +26,14 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [token, setToken] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  const loginUser = async (username: string, password: string) => {
-    const t = await login(username, password);
-    const u = await getUserDetails(t);
-    setToken(t);
-    setUser(u);
-  };
+const loginUser = async (username: string, password: string) => {
+  const t = await login(username, password);
+  await SecureStore.setItemAsync('token', t); // Persist it across sessions
+  const u = await getUserDetails(t);
+  setToken(t);
+  setUser(u);
+};
+
 
   const signupUser = async (
     email: string,
