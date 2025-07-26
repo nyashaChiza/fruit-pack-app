@@ -1,17 +1,15 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import {
   View,
   Text,
   ScrollView,
   TouchableOpacity,
-  FlatList,
   SafeAreaView,
   TextInput,
   Image,
-  Dimensions,
   ActivityIndicator,
 } from "react-native";
-import { Feather, MaterialIcons } from '@expo/vector-icons';
+import { Feather } from '@expo/vector-icons';
 import BottomNavigation from "../../components/common/BottomNavigation";
 import { useNavigation } from '@react-navigation/native';
 import * as FileSystem from "expo-file-system";
@@ -112,8 +110,9 @@ export default function CustomerHomeScreen() {
   navigation.navigate('ProductDetail', { SelectedProduct });
 };
 
-  const renderFruitItem = ({ item }: { item: any }) => (
+  const renderFruitItem = ({ item }: { item: Product })=> (
     <TouchableOpacity
+      key={item.id} // ✅ fix added here
       onPress={() => handlePressProduct(item)}
       className="flex-row bg-white rounded-2xl mb-4 shadow-md overflow-hidden"
     >

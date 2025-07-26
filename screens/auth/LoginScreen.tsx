@@ -10,7 +10,6 @@ import {
   Platform,
   Alert,
 } from "react-native";
-import { router } from "expo-router";
 import { useAuth } from "../../hooks/useAuth";
 
 export default function LoginScreen() {
@@ -87,10 +86,9 @@ export default function LoginScreen() {
         {/* Back Button */}
         <TouchableOpacity
           className="bg-gray-200 py-3 rounded-lg items-center mt-3 flex-row justify-center"
-          onPress={() => router.push("/")}
         >
           <Feather name="arrow-left" size={18} color="#333" style={{ marginRight: 6 }} />
-          <Text className="text-gray-800 font-semibold text-base">Back</Text>
+          <Text className="text-gray-800 font-semibold text-base">Sign Up</Text>
         </TouchableOpacity>
       </View>
     </KeyboardAvoidingView>

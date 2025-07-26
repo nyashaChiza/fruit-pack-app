@@ -10,7 +10,6 @@ import {
 } from "react-native";
 
 import { Feather } from "@expo/vector-icons";
-import { MotiView } from "moti";
 import { useNavigation } from "@react-navigation/native";
 import BottomNavigation from "../../components/common/BottomNavigation";
 import api from "../../services/api";

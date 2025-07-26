@@ -16,6 +16,7 @@ import { useRouter, useLocalSearchParams } from 'expo-router';
 import { useCart } from '../../hooks/useCart';
 import { placeOrder } from '../../services/checkoutService';
 import BottomNavigation from "../../components/common/BottomNavigation";
+import { useNavigation } from "@react-navigation/native";
 
 export default function CheckoutScreen() {
   const [name, setName] = useState('');
@@ -25,7 +26,7 @@ export default function CheckoutScreen() {
   const [location, setLocation] = useState<{ latitude: number; longitude: number } | null>(null);
   const [latitude, setLatitude] = useState<number | null>(null);
   const [longitude, setLongitude] = useState<number | null>(null);
-
+  const navigation = useNavigation();
   const stripe = useStripe();
   const router = useRouter();
   const params = useLocalSearchParams();
@@ -52,6 +53,7 @@ export default function CheckoutScreen() {
     setLocation({ latitude, longitude });
     setLatitude(latitude);
     setLongitude(longitude);
+    Alert.alert('Location Set', 'Your current location has been set.');
   };
 
   const handleCheckout = async () => {
@@ -78,8 +80,8 @@ export default function CheckoutScreen() {
       clearCart,
       router,
     });
+   navigation.navigate('OrderList');
   };
-
   const cartTotal = cart.reduce((acc, item) => acc + item.price * item.quantity, 0);
 
   return (

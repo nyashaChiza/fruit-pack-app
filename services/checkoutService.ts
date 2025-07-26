@@ -71,7 +71,7 @@ export const placeOrder = async ({
     if (selectedMethod === 'card') {
       const { error: initError } = await initPaymentSheet({
         paymentIntentClientSecret: client_secret,
-        returnURL: 'fruitpack://OrderListScreen',
+        returnURL: 'fruitpack://OrderList',
       });
 
       if (initError) throw new Error(initError.message);
@@ -83,16 +83,15 @@ export const placeOrder = async ({
         return;
       }
 
-      Alert.alert('✅ Payment Successful', `Order ID: ${order_id}`);
+      Alert.alert('Payment Successful', `Order ID: ${order_id}`);
     } else {
-      Alert.alert('✅ Order Created', `Order ID: ${order_id}`);
+      Alert.alert('Order Created', `Order ID: ${order_id}`);
     }
 
     clearCart();
-    router.replace('/screens/orders');
   } catch (err: any) {
     console.error('Checkout error:', err.response?.data || err.message);
-    Alert.alert('❌ Error', err.response?.data?.detail || 'Something went wrong.');
+    Alert.alert(' Error', err.response?.data?.detail || 'Something went wrong.');
   }
 };
 
