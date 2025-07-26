@@ -1,7 +1,7 @@
-// hooks/useAuth.tsx
 import { createContext, useContext, useEffect, useState } from 'react';
 import { login, logout, getToken } from '../services/authServices';
 import { getUserDetails } from '../services/userServices';
+import api from '../services/api';
 
 type User = {
   id: string;
@@ -13,6 +13,7 @@ type AuthContextType = {
   user: User | null;
   token: string | null;
   loginUser: (username: string, password: string) => Promise<void>;
+  signupUser: (email: string, username: string, fullName: string, password: string) => Promise<void>;
   logoutUser: () => Promise<void>;
   isLoading: boolean;
 };
@@ -29,6 +30,22 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     const u = await getUserDetails(t);
     setToken(t);
     setUser(u);
+  };
+
+  const signupUser = async (
+    email: string,
+    username: string,
+    fullName: string,
+    password: string
+  ) => {
+    const payload = {
+      email,
+      username,
+      full_name: fullName,
+      password,
+      is_active: true,
+    };
+    await api.post('users/', payload);
   };
 
   const logoutUser = async () => {
@@ -54,7 +71,9 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   }, []);
 
   return (
-    <AuthContext.Provider value={{ user, token, loginUser, logoutUser, isLoading }}>
+    <AuthContext.Provider
+      value={{ user, token, loginUser, signupUser, logoutUser, isLoading }}
+    >
       {children}
     </AuthContext.Provider>
   );

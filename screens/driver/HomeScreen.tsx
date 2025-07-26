@@ -32,7 +32,7 @@ export default function HomeScreen() {
     };
     fetchUserDetails();
   }, []);
-  
+
   useEffect(() => {
     const fetchDriverDetails = async () => {
       const token = await getToken();
@@ -117,7 +117,7 @@ export default function HomeScreen() {
         </View>
 
         {/* 🧭 Task List */}
-        <Text className="text-lg font-semibold text-green-900 mb-3">Your Tasks</Text>
+        <Text className="text-lg font-semibold text-green-900 mb-3">Home</Text>
 
         <View className="space-y-4">
           <TaskCard

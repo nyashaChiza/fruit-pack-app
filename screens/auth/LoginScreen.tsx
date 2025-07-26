@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Feather, MaterialIcons } from '@expo/vector-icons';
 
+
 import {
   Text,
   TextInput,
@@ -11,11 +12,13 @@ import {
   Alert,
 } from "react-native";
 import { useAuth } from "../../hooks/useAuth";
+import { useNavigation } from '@react-navigation/native';
 
 export default function LoginScreen() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const { loginUser, isLoading } = useAuth();
+  const navigation = useNavigation();
 
   const handleLogin = async () => {
     if (!username || !password) {
@@ -46,7 +49,7 @@ export default function LoginScreen() {
         <View className="flex-row items-center bg-green-50 rounded-lg mb-4 px-3 py-2">
           <Feather name="user" size={18} color="#4CAF50" style={{ marginRight: 6 }} />
           <TextInput
-            className="flex-1 text-base text-gray-700"
+            className="flex-1 text-base text-gray-700 py-3"
             placeholder="Username"
             placeholderTextColor="#8c9aa8ff"
             autoCapitalize="none"
@@ -60,7 +63,7 @@ export default function LoginScreen() {
         <View className="flex-row items-center bg-green-50 rounded-lg mb-4 px-3 py-2">
           <Feather name="lock" size={18} color="#4CAF50" style={{ marginRight: 6 }} />
           <TextInput
-            className="flex-1 text-base text-gray-800"
+            className="flex-1 text-base text-gray-800 py-3"
             placeholder="Password"
             placeholderTextColor="#8c9aa8ff"
             autoCapitalize="none"
@@ -85,6 +88,7 @@ export default function LoginScreen() {
 
         {/* Back Button */}
         <TouchableOpacity
+          onPress={() => navigation.navigate('SignupScreen')}
           className="bg-gray-200 py-3 rounded-lg items-center mt-3 flex-row justify-center"
         >
           <Feather name="arrow-left" size={18} color="#333" style={{ marginRight: 6 }} />

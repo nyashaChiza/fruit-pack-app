@@ -161,7 +161,7 @@ return (
       <TextInput
         placeholder="Search fruits..."
         placeholderTextColor="#4CAF50"
-        className="flex-1 text-green-800 text-base"
+        className="flex-1 text-green-800 text-base py-2"
         value={searchTerm}
         onChangeText={setSearchTerm}
         autoCapitalize="none"
