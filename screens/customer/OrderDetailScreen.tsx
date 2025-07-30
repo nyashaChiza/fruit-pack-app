@@ -112,12 +112,15 @@ export default function OrderDetailScreen() {
             <Feather name="credit-card" size={16} color="gray" /> Payment Status:{" "}
             <Text className="font-semibold">{order.payment_status}</Text>
           </Text>
-          {order.distance_from_driver != null && (
-            <Text className="text-gray-700">
-              <MaterialCommunityIcons name="bike" size={16} color="gray" /> Distance From Driver:{" "}
-              <Text className="font-semibold">{order.distance_from_driver}km</Text>
-            </Text>
-          )}
+          {order.distance_from_driver != null &&
+            order.delivery_status !== "delivered" &&
+            order.delivery_status !== "completed" && (
+              <Text className="text-gray-700">
+                <MaterialCommunityIcons name="bike" size={16} color="gray" /> Distance From Driver:{" "}
+                <Text className="font-semibold">{order.distance_from_driver}km</Text>
+              </Text>
+            )}
+
 
         </View>
 
@@ -140,7 +143,7 @@ export default function OrderDetailScreen() {
             <Text className="text-gray-600">No items found.</Text>
           )}
         </View>
-        
+
 
         {/* Timeline Section */}
         <View className="bg-white p-4 rounded-xl shadow mb-6 border border-gray-200">

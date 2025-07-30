@@ -198,7 +198,7 @@ export default function OrderDetailsScreen() {
           </Text>
           <TouchableOpacity
             onPress={handleNavigation}
-            className="mt-4 bg-blue-600 px-4 py-2 rounded-lg"
+            className="mt-4 bg-green-600 px-4 py-2 rounded-lg"
           >
             <Text className="text-white text-center font-semibold">Navigate to Delivery</Text>
           </TouchableOpacity>

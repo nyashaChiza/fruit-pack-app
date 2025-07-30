@@ -9,15 +9,13 @@ import {
   Image,
   ActivityIndicator,
 } from "react-native";
-import { Feather } from '@expo/vector-icons';
+import { Feather } from "@expo/vector-icons";
 import BottomNavigation from "../../components/common/BottomNavigation";
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation } from "@react-navigation/native";
 import * as FileSystem from "expo-file-system";
 import { Product, Category } from "../../types";
 import api from "../../services/api";
 import { getToken } from "../../services/authServices";
-
-
 
 // Dummy ads instead of banner images
 const dummyAds = [
@@ -33,11 +31,11 @@ export default function CustomerHomeScreen() {
   const [token, setToken] = useState<string | null>(null);
   const [categories, setCategories] = useState<Category[]>([]);
   const [fruits, setFruits] = useState<Product[]>([]);
+  const [selectedCategory, setSelectedCategory] = useState<number | null>(null);
   const [cachedImages, setCachedImages] = useState<Record<string, string>>({});
   const [searchTerm, setSearchTerm] = useState("");
   const [loading, setLoading] = useState(true);
 
-  // Fetch token on mount
   useEffect(() => {
     async function fetchToken() {
       const savedToken = await getToken();
@@ -46,7 +44,6 @@ export default function CustomerHomeScreen() {
     fetchToken();
   }, []);
 
-  // Fetch categories once token available
   useEffect(() => {
     if (!token) return;
 
@@ -63,7 +60,6 @@ export default function CustomerHomeScreen() {
     fetchCategories();
   }, [token]);
 
-  // Fetch fruits + cache images once token available
   useEffect(() => {
     if (!token) return;
 
@@ -99,20 +95,19 @@ export default function CustomerHomeScreen() {
     fetchFruits();
   }, [token]);
 
+  const filteredFruits = fruits.filter((fruit: Product) => {
+    const matchesSearch = fruit.name.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesCategory = selectedCategory === null || fruit.category_id === selectedCategory;
+    return matchesSearch && matchesCategory;
+  });
 
+  const handlePressProduct = (SelectedProduct: Product) => {
+    navigation.navigate("ProductDetail", { SelectedProduct });
+  };
 
-  const filteredFruits = fruits.filter((fruit: Product) =>
-    fruit.name.toLowerCase().includes(searchTerm.toLowerCase())
-  );
-
-
-  const handlePressProduct = (SelectedProduct:Product) => {
-  navigation.navigate('ProductDetail', { SelectedProduct });
-};
-
-  const renderFruitItem = ({ item }: { item: Product })=> (
+  const renderFruitItem = ({ item }: { item: Product }) => (
     <TouchableOpacity
-      key={item.id} // ✅ fix added here
+      key={item.id}
       onPress={() => handlePressProduct(item)}
       className="flex-row bg-white rounded-2xl mb-4 shadow-md overflow-hidden"
     >
@@ -122,7 +117,7 @@ export default function CustomerHomeScreen() {
             cachedImages[item.id] ||
             `${api.defaults.baseURL}products/images/${item.image}`,
         }}
-        className="w-24 rounded-l-2xl"
+        className="w-24 h-24 rounded-l-2xl"
       />
       <View className="flex-1 p-4 justify-center">
         <Text className="text-lg font-semibold text-green-800">{item.name}</Text>
@@ -146,77 +141,88 @@ export default function CustomerHomeScreen() {
   if (loading) {
     return (
       <SafeAreaView className="flex-1 justify-center items-center bg-green-100">
-        <ActivityIndicator size="large" color="#ebf0ebff" />
+        <ActivityIndicator size="large" color="#4CAF50" />
       </SafeAreaView>
     );
   }
 
-return (
-  <SafeAreaView className="flex-1 bg-green-50">
-  {/* 🌿 Top Section: Search + Ads Carousel */}
-  <View className="p-4 pb-0">
-    {/* 🔍 Search Box */}
-    <View className="flex-row items-center mb-4 bg-white rounded-xl px-4 py-3">
-      <Feather name="search" size={20} color="#4CAF50" style={{ marginRight: 8 }} />
-      <TextInput
-        placeholder="Search fruits..."
-        placeholderTextColor="#4CAF50"
-        className="flex-1 text-green-800 text-base py-2"
-        value={searchTerm}
-        onChangeText={setSearchTerm}
-        autoCapitalize="none"
-      />
-    </View>
-
-    {/* 🧃 Ad Carousel */}
-    <ScrollView horizontal showsHorizontalScrollIndicator={false} className="mb-4">
-      {dummyAds.map((ad) => (
-        <View key={ad.id} className="w-72 h-40 bg-green-300 rounded-2xl mr-4 p-5 justify-center shadow-sm">
-          <Text className="text-white  font-bold text-4xl mb-2">
-            <Feather name="tag" size={22} color="white" /> {ad.title}
-          </Text>
-          <Text className="text-white text-lg">{ad.description}</Text>
+  return (
+    <SafeAreaView className="flex-1 bg-green-50">
+      {/* Top Section */}
+      <View className="p-4 pb-0">
+        {/* Search Box */}
+        <View className="flex-row items-center mb-4 bg-white rounded-xl px-4 py-3">
+          <Feather name="search" size={20} color="#4CAF50" style={{ marginRight: 8 }} />
+          <TextInput
+            placeholder="Search fruits..."
+            placeholderTextColor="#4CAF50"
+            className="flex-1 text-green-800 text-base py-2"
+            value={searchTerm}
+            onChangeText={setSearchTerm}
+            autoCapitalize="none"
+          />
         </View>
-      ))}
-    </ScrollView>
-  </View>
 
-  {/* 🍍 Scrollable Middle */}
-  <ScrollView className="px-4">
-    {/* 📂 Categories */}
-    <View className="mb-8">
-      <View className="flex-row items-center mb-3">
-        <Feather name="grid" size={20} color="green" />
-        <Text className="text-green-900 font-semibold text-xl ml-2">Categories</Text>
-      </View>
-      <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-        {categories.map((cat: any) => (
-          <View key={cat.id} className="bg-white rounded-xl px-5 py-3 mr-4 items-center justify-center ">
-            <View className="mb-1">
-              {typeof cat.icon === 'string' ? (
-                <Text className="text-green-700 text-lg">{cat.icon}</Text>
-              ) : (
-                cat.icon
-              )}
+        {/* Ads Carousel */}
+        <ScrollView horizontal showsHorizontalScrollIndicator={false} className="mb-4">
+          {dummyAds.map((ad) => (
+            <View key={ad.id} className="w-72 h-40 bg-green-300 rounded-2xl mr-4 p-5 justify-center shadow-sm">
+              <Text className="text-white font-bold text-4xl mb-2">
+                <Feather name="tag" size={22} color="white" /> {ad.title}
+              </Text>
+              <Text className="text-white text-lg">{ad.description}</Text>
             </View>
-            <Text className="text-green-800 font-medium">{cat.name}</Text>
-          </View>
-        ))}
-      </ScrollView>
-    </View>
-
-    {/* 🍎 Popular Fruits */}
-    <View className="pb-20">
-      <View className="flex-row items-center mb-4">
-        <Feather name="star" size={20} color="green" />
-        <Text className="text-green-900 font-semibold text-xl ml-2">Popular Fruits</Text>
+          ))}
+        </ScrollView>
       </View>
-      {filteredFruits.map((item) => renderFruitItem({ item }))}
-    </View>
-  </ScrollView>
 
-  {/* 📱 Fixed Navigation */}
-  <BottomNavigation />
-</SafeAreaView>
-);
+      {/* Middle Section */}
+      <ScrollView className="px-4">
+        {/* Categories */}
+        <View className="mb-8">
+          <View className="flex-row items-center mb-3">
+            <Feather name="grid" size={20} color="green" />
+            <Text className="text-green-900 font-semibold text-xl ml-2">Categories</Text>
+          </View>
+          <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+            {categories.map((cat: any) => {
+              const isSelected = selectedCategory === cat.id;
+              return (
+                <TouchableOpacity
+                  key={cat.id}
+                  onPress={() => setSelectedCategory(isSelected ? null : cat.id)}
+                  className={`rounded-xl px-5 py-3 mr-4 items-center justify-center ${isSelected ? "bg-green-200" : "bg-white"}`}
+                >
+                  <View className="mb-1">
+                    {typeof cat.icon === "string" ? (
+                      <Text className="text-green-700 text-lg">{cat.icon}</Text>
+                    ) : (
+                      cat.icon
+                    )}
+                  </View>
+                  <Text className={`font-medium ${isSelected ? "text-green-900" : "text-green-800"}`}>{cat.name}</Text>
+                </TouchableOpacity>
+              );
+            })}
+          </ScrollView>
+        </View>
+
+        {/* Fruits */}
+        <View className="pb-20">
+          <View className="flex-row items-center mb-4">
+            <Feather name="star" size={20} color="green" />
+            <Text className="text-green-900 font-semibold text-xl ml-2">Popular Fruits</Text>
+          </View>
+          {filteredFruits.length === 0 ? (
+            <Text className="text-center text-gray-500">No fruits found for selected category.</Text>
+          ) : (
+            filteredFruits.map((item) => renderFruitItem({ item }))
+          )}
+        </View>
+      </ScrollView>
+
+      {/* Bottom Nav */}
+      <BottomNavigation />
+    </SafeAreaView>
+  );
 }
