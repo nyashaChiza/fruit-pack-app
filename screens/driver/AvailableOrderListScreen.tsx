@@ -1,6 +1,6 @@
 // AssignedOrderListScreen.tsx
 import { useEffect, useState } from 'react';
-import { Alert, FlatList, View, Text } from 'react-native';
+import { FlatList, View, Text } from 'react-native';
 import { getToken } from  "../../services/authServices";
 import { getDriverDetails } from  "../../services/userServices";
 import api from "../../services/api";
@@ -9,6 +9,7 @@ import { Order } from "../../types";
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import DriverBottomNavigation from "../../components/common/DriverBottomNavigation";
+import { showToast } from "services/toastService";
 
 export default function AvailableOrderListScreen() {
   const [driverDetails, setDriverDetails] = useState(null);
@@ -36,7 +37,7 @@ export default function AvailableOrderListScreen() {
         const res = await api.get(`/orders/available/orders`);
         setOrders(res.data);
       } catch (err) {
-        Alert.alert('Notice', err.response?.data?.detail || 'Could not fetch orders');
+        showToast('info', 'Notification', err.response?.data?.detail || 'Failed to load available orders.');
       } finally {
         setLoading(false);
       }

@@ -6,34 +6,37 @@ import {
   View,
   KeyboardAvoidingView,
   Platform,
-  Alert,
 } from 'react-native';
+import { showToast } from "services/toastService";
 import { Feather, MaterialIcons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { useAuth } from '../../hooks/useAuth';
 
+
 export default function SignupScreen() {
   const [email, setEmail] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
   const [username, setUsername] = useState('');
   const [fullName, setFullName] = useState('');
   const [password, setPassword] = useState('');
   const navigation = useNavigation();
 
-  const { signupUser, isLoading } = useAuth();
+  const { signupUser } = useAuth();
 
   const handleSignup = async () => {
+    setIsLoading(true);
     if (!email || !password || !username || !fullName) {
-      Alert.alert('Missing Fields', 'Please fill in all required fields.');
+      showToast('error', 'Missing Fields', 'Please fill in all required fields.');
       return;
     }
 
     try {
       await signupUser(email, username, fullName, password);
-      Alert.alert('Signup successful', 'You can now log in with your credentials.');
-      navigation.replace('LoginScreen');
+      showToast('success', 'Signup Successful', 'You can now log in with your credentials.');
+      navigation.navigate('LogIn');
     } catch (e) {
       console.error(e);
-      Alert.alert('Signup failed', 'An error occurred. Please try again.');
+      showToast('error', 'Signup Failed', 'Please try again later.');
     }
   };
 

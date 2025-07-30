@@ -7,12 +7,12 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { LinearGradient } from 'expo-linear-gradient';
 import { getToken } from '../../services/authServices';
 import { getDriverDetails } from '../../services/userServices';
 import api from '../../services/api';
 import DriverBottomNavigation from '../../components/common/DriverBottomNavigation';
 import { MaterialIcons, Feather } from '@expo/vector-icons';
+import { showToast } from "services/toastService";
 
 export default function ClaimListScreen() {
   const [driverDetails, setDriverDetails] = useState(null);
@@ -39,7 +39,8 @@ export default function ClaimListScreen() {
         const res = await api.get(`/claims/driver/${driverDetails.id}/claims`);
         setClaims(res.data);
       } catch (err) {
-        Alert.alert('Notice', err.response?.data?.detail || 'Could not fetch claims');
+
+        showToast('info', 'Notification', err.response?.data?.detail || 'Failed to load driver claims.');
       } finally {
         setLoading(false);
       }
@@ -97,12 +98,12 @@ export default function ClaimListScreen() {
   return (
     <SafeAreaView className="flex-1 bg-green-50">
      
-        <Text className="text-2xl font-bold my-3 text-green-900 text-center mb-6">Claims</Text>
+        <Text className="text-2xl font-bold my-3 text-green-900 text-center mb-6">Driver Claims</Text>
 
         {loading ? (
           <ActivityIndicator size="large" color="#4caf50" className="mt-16" />
         ) : claims.length === 0 ? (
-          <Text className="text-gray-500 text-center mt-20">No claims found.</Text>
+          <Text className="text-gray-500 text-center mt-20">No driver claims found.</Text>
         ) : (
           <FlatList
             data={claims}

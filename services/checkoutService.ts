@@ -1,9 +1,9 @@
-import { Alert } from 'react-native';
 import { Stripe, initPaymentSheet, presentPaymentSheet } from '@stripe/stripe-react-native';
 import api from "./api";
 import { getToken } from "./authServices";
 import { CartItem } from '../types';
 import { Router } from 'expo-router/build/hooks';
+import { showToast } from "services/toastService";
 
 
 type Prop = {
@@ -32,19 +32,19 @@ export const placeOrder = async ({
   router,
 }: Prop) => {
   if (!name || !address || !phone || !selectedMethod) {
-    Alert.alert('Missing Info', 'Please fill in all fields and select a payment method.');
+    showToast('error', 'Validation Error', 'Please fill in all required fields.');
     return;
   }
 
   if (latitude == null || longitude == null) {
-    Alert.alert('Location Required', 'Please select your delivery location on the map.');
+    showToast('error', 'Location Error', 'Please select a valid delivery location.');
     return;
   }
 
   try {
     const token = await getToken();
     if (!token) {
-      Alert.alert('Unauthorized', 'Please log in first.');
+      showToast('error', 'Unauthorized', 'Please log in to place an order.');
       return;
     }
 
@@ -53,8 +53,8 @@ export const placeOrder = async ({
     const payload = {
       full_name: name,
       address,
-      latitude : 0,
-      longitude:0,
+      latitude,
+      longitude,
       phone,
       payment_method: selectedMethod,
       items: cartItems.map(item => ({
@@ -79,19 +79,19 @@ export const placeOrder = async ({
       const { error: paymentError } = await presentPaymentSheet();
 
       if (paymentError) {
-        Alert.alert('Payment Failed', paymentError.message);
+        showToast('error', 'Payment Error', paymentError.message || 'Payment failed.');
         return;
       }
 
-      Alert.alert('Payment Successful', `Order ID: ${order_id}`);
+      showToast('success', 'Payment Successful', 'Your payment has been processed successfully.');
     } else {
-      Alert.alert('Order Created', `Order ID: ${order_id}`);
+      showToast('success', 'Order Placed', 'Your order has been placed successfully.');
     }
 
     clearCart();
   } catch (err: any) {
     console.error('Checkout error:', err.response?.data || err.message);
-    Alert.alert(' Error', err.response?.data?.detail || 'Something went wrong.');
+    showToast('error', 'Checkout Error', err.response?.data?.detail || 'Failed to place order.');
   }
 };
 

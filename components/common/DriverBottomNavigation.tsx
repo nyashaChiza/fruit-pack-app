@@ -1,17 +1,18 @@
 import { View, TouchableOpacity, Text } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { Feather } from '@expo/vector-icons';
-import { logout } from '../../services/authServices';
+import { useAuth } from "../../hooks/useAuth";
 
 export default function DriverBottomNavigation() {
     const navigation = useNavigation();
+    const { logoutUser } = useAuth();
 
     return (
         <View className="absolute bottom-0 left-0 right-0 bg-white flex-row justify-around items-center py-6 px-4 border-t border-gray-300 shadow-md w-full z-50">
             <View className="flex-row bg-white rounded-xl shadow-md overflow-hidden">
                 {/* 🏠 Home */}
                 <TouchableOpacity
-                    onPress={() => navigation.navigate('Home')}
+                    onPress={() => navigation.navigate('DriverHome')}
                     className="flex-1 flex-row items-center justify-center py-3 border-r border-gray-300"
                 >
                     <Feather name="home" size={18} color="green" style={{ marginRight: 6 }} />
@@ -21,8 +22,8 @@ export default function DriverBottomNavigation() {
                 {/* 🔒 Logout */}
                 <TouchableOpacity
                     onPress={async () => {
-                        await logout();
-                        navigation.replace('LoginScreen');
+                        await logoutUser();              // Context-aware reset
+                        navigation.replace('LoginScreen'); // Now navigate cleanly
                     }}
                     className="flex-1 flex-row items-center justify-center py-3"
                 >

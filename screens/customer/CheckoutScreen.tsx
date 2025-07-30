@@ -4,7 +4,6 @@ import {
   Text,
   TextInput,
   TouchableOpacity,
-  Alert,
   ScrollView,
   SafeAreaView,
 } from 'react-native';
@@ -17,6 +16,7 @@ import { useCart } from '../../hooks/useCart';
 import { placeOrder } from '../../services/checkoutService';
 import BottomNavigation from "../../components/common/BottomNavigation";
 import { useNavigation } from "@react-navigation/native";
+import { showToast } from '../../services/toastService';
 
 export default function CheckoutScreen() {
   const [name, setName] = useState('');
@@ -45,7 +45,7 @@ export default function CheckoutScreen() {
   const handleCurrentLocation = async () => {
     const { status } = await Location.requestForegroundPermissionsAsync();
     if (status !== 'granted') {
-      Alert.alert('Permission denied', 'Location access is required.');
+      showToast('error', 'Permission Denied', 'Location permission is required to use current location.');
       return;
     }
     const currentLocation = await Location.getCurrentPositionAsync({});
@@ -53,12 +53,13 @@ export default function CheckoutScreen() {
     setLocation({ latitude, longitude });
     setLatitude(latitude);
     setLongitude(longitude);
-    Alert.alert('Location Set', 'Your current location has been set.');
+    showToast('success', 'Location Set', 'Your current location has been set.');
+
   };
 
   const handleCheckout = async () => {
     if (!latitude || !longitude) {
-      Alert.alert('Location Required', 'Please select a delivery location.');
+      showToast('error', 'Location Required', 'Please select your delivery location on the map.');
       return;
     }
 
@@ -159,37 +160,10 @@ export default function CheckoutScreen() {
         <Text className="text-lg font-semibold text-gray-800 ml-2">Delivery Location</Text>
       </View>
 
-      <TouchableOpacity onPress={handleCurrentLocation} className="bg-blue-600 p-3 rounded-md mb-3 flex-row justify-center">
+      <TouchableOpacity onPress={handleCurrentLocation} className="bg-green-600 p-3 rounded-md mb-3 flex-row justify-center">
         <Feather name="navigation" size={16} color="white" style={{ marginRight: 6 }} />
         <Text className="text-white text-center font-medium">Use Current Location</Text>
       </TouchableOpacity>
-
-      <View className="h-64 w-full rounded-lg overflow-hidden">
-        <MapView
-          className="flex-1"
-          initialRegion={{
-            latitude: location?.latitude ?? -20.165,
-            longitude: location?.longitude ?? 57.503,
-            latitudeDelta: 0.05,
-            longitudeDelta: 0.05,
-          }}
-          onPress={(e) => {
-            const coords = e.nativeEvent.coordinate;
-            setLocation(coords);
-            setLatitude(coords.latitude);
-            setLongitude(coords.longitude);
-          }}
-        >
-          {location && (
-            <Marker
-              coordinate={location}
-              title="Delivery Location"
-              description="Your selected delivery point"
-              pinColor="green"
-            />
-          )}
-        </MapView>
-      </View>
     </View>
 
     {/* 📦 Order Summary */}

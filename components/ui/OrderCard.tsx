@@ -1,5 +1,5 @@
 import { View, Text, Pressable } from 'react-native';
-import { MaterialIcons } from '@expo/vector-icons';
+import { MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
 import { format } from 'date-fns';
 
 export default function OrderCard({ order, onPress }: { order: any; onPress?: () => void }) {
@@ -22,7 +22,7 @@ export default function OrderCard({ order, onPress }: { order: any; onPress?: ()
       className="mb-4 p-4 rounded-xl shadow-sm bg-white border border-gray-200"
     >
       <View className="flex-row justify-between items-center mb-2">
-        <Text className="text-lg font-semibold text-gray-800">Order #{order.id}</Text>
+        <Text className="text-lg font-semibold text-gray-800">Order #{order.order_number}</Text>
         <View className={`px-2 py-1 rounded-full ${getStatusColor(order.payment_status)}`}>
           <Text className="text-xs font-medium">{order.payment_status}</Text>
         </View>
@@ -37,6 +37,12 @@ export default function OrderCard({ order, onPress }: { order: any; onPress?: ()
         <MaterialIcons name="location-on" size={16} color="#6B7280" />
         <Text className="ml-1 text-sm text-gray-600">{order.destination_address}</Text>
       </View>
+      {order.distance_from_driver != null && (
+            <View className="flex-row items-center mb-1">
+              <MaterialCommunityIcons name="bike" size={16} color="gray" />
+              <Text className="ml-1 text-sm text-gray-600">{order.distance_from_driver}km</Text>
+            </View>
+          )}
 
       <View className="flex-row items-center mb-1">
         <MaterialIcons

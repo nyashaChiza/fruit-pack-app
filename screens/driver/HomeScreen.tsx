@@ -4,8 +4,7 @@ import {
   View,
   Text,
   TouchableOpacity,
-  Switch,
-  Alert
+  Switch
 } from 'react-native';
 import { useEffect, useState } from 'react';
 import api from "../../services/api";
@@ -15,8 +14,8 @@ import { getToken } from "../../services/authServices";
 import { useNavigation } from '@react-navigation/native';
 import { Feather, MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
 import DriverBottomNavigation from "../../components/common/DriverBottomNavigation";
-
-
+import { LOCATION_TASK_NAME } from '../../services/locationServices';
+import { showToast } from "services/toastService";
 
 export default function HomeScreen() {
   const navigation = useNavigation();
@@ -24,6 +23,44 @@ export default function HomeScreen() {
   const [userDetails, setUserDetails] = useState(null);
   const [online, setOnline] = useState(true);
 
+  useEffect(() => {
+    if (online) {
+      startLocationUpdates();
+    } else {
+      stopLocationUpdates();
+    }
+  }, [online]);
+
+  const startLocationUpdates = async () => {
+    const { status } = await Location.requestForegroundPermissionsAsync();
+    if (status !== 'granted') {
+      showToast('error', 'Permission Denied', 'Location permission is required to share your live location.');
+      return;
+    }
+
+    const hasStarted = await Location.hasStartedLocationUpdatesAsync(LOCATION_TASK_NAME);
+    if (!hasStarted) {
+      await Location.startLocationUpdatesAsync(LOCATION_TASK_NAME, {
+        accuracy: Location.Accuracy.High,
+        timeInterval: 10000, // 60 seconds
+        distanceInterval: 0, // report regardless of movement
+        showsBackgroundLocationIndicator: true,
+        foregroundService: {
+          notificationTitle: 'FruitPack Delivery',
+          notificationBody: 'Sharing your live location...',
+        },
+      });
+      console.log('✅ Background location started');
+    }
+  };
+
+  const stopLocationUpdates = async () => {
+    const hasStarted = await Location.hasStartedLocationUpdatesAsync(LOCATION_TASK_NAME);
+    if (hasStarted) {
+      await Location.stopLocationUpdatesAsync(LOCATION_TASK_NAME);
+      console.log('🛑 Background location stopped');
+    }
+  };
   // Fetch user details and token on mount
   useEffect(() => {
     const fetchUserDetails = async () => {
@@ -52,7 +89,8 @@ export default function HomeScreen() {
         await api.patch(`/drivers/${driverDetails.id}/status`, { status: newStatus });
       }
     } catch (err: any) {
-      Alert.alert('Error', err?.response?.data?.detail || 'Failed to update status');
+      console.error("Error updating driver status:", err);
+      showToast('error', 'Error', err?.response?.data?.detail || 'Failed to update status');
       setOnline(online); // revert on error
     }
   };
@@ -62,7 +100,7 @@ export default function HomeScreen() {
       // Ask for location permissions
       let { status } = await Location.requestForegroundPermissionsAsync();
       if (status !== 'granted') {
-        Alert.alert('Permission denied', 'Location permission is required to share your live location.');
+        showToast('error', 'Permission Denied', 'Location permission is required to share your live location.');
         return;
       }
 
@@ -77,10 +115,10 @@ export default function HomeScreen() {
       // Post location to the API
       await api.post(`/drivers/driver/${driverDetails.id}/location`, { latitude, longitude });
 
-      Alert.alert('Success', 'Live location shared!');
+      showToast('success', 'Location Shared', 'Your live location has been shared successfully.');
     } catch (err: any) {
       console.error('Error sharing live location:', err);
-      Alert.alert('Error', err?.response?.data?.detail || 'Failed to share location');
+      showToast('error', 'Error', err?.response?.data?.detail || 'Failed to share live location.');
     }
   };
 
@@ -91,7 +129,7 @@ export default function HomeScreen() {
         {/* 👋 Header */}
         <View className="mb-6">
           <Text className="text-2xl font-bold text-green-900 mb-1">
-            <MaterialIcons name="person-pin" size={24} color="green" /> Welcome, {userDetails?.full_name || ''}
+            <MaterialIcons name="person-pin" size={24} color="green" /> {userDetails?.full_name || ''}
           </Text>
 
           {/* 🔄 Status Row */}
@@ -120,6 +158,11 @@ export default function HomeScreen() {
         <Text className="text-lg font-semibold text-green-900 mb-3">Home</Text>
 
         <View className="space-y-4">
+          <TaskCard
+            icon={<Feather name="hard-drive" size={20} color="green" />}
+            label="System Claims"
+            onPress={() => navigation.navigate('SystemClaims')}
+          />
           <TaskCard
             icon={<Feather name="package" size={20} color="green" />}
             label="Assigned Orders"

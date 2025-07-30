@@ -26,13 +26,13 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [token, setToken] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-const loginUser = async (username: string, password: string) => {
-  const t = await login(username, password);
-  await SecureStore.setItemAsync('token', t); // Persist it across sessions
-  const u = await getUserDetails(t);
-  setToken(t);
-  setUser(u);
-};
+  const loginUser = async (username: string, password: string) => {
+    const t = await login(username, password);
+    await SecureStore.setItemAsync('token', t); // Persist it across sessions
+    const u = await getUserDetails(t);
+    setToken(t);
+    setUser(u);
+  };
 
 
   const signupUser = async (
@@ -52,8 +52,8 @@ const loginUser = async (username: string, password: string) => {
   };
 
   const logoutUser = async () => {
-    await logout();
-    setUser(null);
+    await logout(); // Clears SecureStore
+    setUser(null);  // Resets context
     setToken(null);
   };
 

@@ -6,20 +6,21 @@ import {
   TouchableOpacity,
   ActivityIndicator,
   SafeAreaView,
-  Alert,
+  Linking
 } from "react-native";
-import { Feather, MaterialIcons } from '@expo/vector-icons';
+import { Feather, MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
 import { useRoute, useNavigation } from "@react-navigation/native";
 import api from "../../services/api";
 import { getToken } from "../../services/authServices";
 import { getDriverDetails } from "../../services/userServices";
 import DriverBottomNavigation from "../../components/common/DriverBottomNavigation";
+import { showToast } from "services/toastService";
 
 
 export default function OrderDetailsScreen() {
   const route = useRoute();
   const navigation = useNavigation();
-  const { order: selectedOrder } = route.params as { order: any }; // ✅ Fix naming and typing
+  const { order: selectedOrder } = route.params as { order: any };
 
   const [order, setOrder] = useState<any>(null);
   const [loading, setLoading] = useState(true);
@@ -45,7 +46,7 @@ export default function OrderDetailsScreen() {
         setOrder(res.data);
       } catch (err) {
         console.error("Error fetching order:", err);
-        Alert.alert("Error", "Failed to load order details.");
+        showToast('error', 'Error', 'Failed to load order details.');
       } finally {
         setLoading(false);
       }
@@ -60,29 +61,50 @@ export default function OrderDetailsScreen() {
       await api.put(`/orders/${order.id}/status`, {
         status: 'delivered',
       });
-      Alert.alert('Success', 'Order marked as delivered!');
-      navigation.navigate('Home'); // Navigate back after successful delivery
+      showToast('success', 'Order Delivered', 'Thank you for delivering the order.');
+      navigation.navigate('DriverHome'); // Navigate back after successful delivery
     } catch (err) {
       console.error("Error delivering order:", err);
-      Alert.alert('Error', err.response?.data?.detail || 'Failed to update order status');
+      showToast('error', 'Error', 'Failed to deliver order. Please try again later.');
     } finally {
       setLoading(false);
     }
   };
-    const claimOrder = async () => {
+  const claimOrder = async () => {
     if (!driverDetails?.id) {
-      Alert.alert('Error', 'Missing driver info');
+      showToast('error', 'Error', 'Driver details not found. Please try again later.');
       return;
     }
 
     try {
       await api.post(`/claims/claim/order/${order.id}/driver/${driverDetails.id}`);
-      Alert.alert('Success', 'Order Claim Successful');
-      navigation.navigate('Home'); // Navigate back after successful delivery
+      showToast('success', 'Order Claimed', 'You have successfully claimed the order.');
+      navigation.navigate('DriverHome'); // Navigate back after successful delivery
     } catch (err) {
-      Alert.alert('Error', err.response?.data?.detail || 'Failed to claim order');
+      console.error("Error claiming order:", err);
+      showToast('error', 'Error', err.response?.data?.detail || 'Failed to claim order.');
     }
   };
+
+  const handleNavigation = () => {
+    if (
+      !driverDetails?.latitude || !driverDetails?.longitude ||
+      !order?.destination_latitude || !order?.destination_longitude
+    ) {
+      showToast('error', 'Error', 'Driver or order location not available.');
+      return;
+    }
+
+    const origin = `${driverDetails.latitude},${driverDetails.longitude}`;
+    const destination = `${order.destination_latitude},${order.destination_longitude}`;
+    const url = `https://www.google.com/maps/dir/?api=1&origin=${origin}&destination=${destination}&travelmode=driving`;
+
+    Linking.openURL(url).catch(err => {
+      console.error("Failed to open Google Maps:", err);
+      showToast('error', 'Error', 'Failed to open navigation. Please try again later.');
+    });
+  };
+
 
   const statuses = [
     { key: "pending", label: "Ordered", description: "Order received" },
@@ -126,7 +148,7 @@ export default function OrderDetailsScreen() {
         {/* Order Summary */}
         <View className="bg-white p-4 rounded-xl border border-gray-200 shadow-sm mb-4">
           <View className="flex-row justify-between items-center mb-2">
-            <Text className="text-xl font-bold text-gray-800">Order #{order.id}</Text>
+            <Text className="text-xl font-bold text-gray-800">Order #{order.order_number}</Text>
             <Feather name="package" size={20} color="green" />
           </View>
           <Text className="text-green-600 font-bold mb-1">
@@ -139,10 +161,16 @@ export default function OrderDetailsScreen() {
             <MaterialIcons name="local-shipping" size={16} color="gray" /> Delivery Status:{" "}
             <Text className="font-semibold">{order.delivery_status}</Text>
           </Text>
-          <Text className="text-gray-700">
+          <Text className="text-gray-700 mb-1">
             <Feather name="credit-card" size={16} color="gray" /> Payment Status:{" "}
             <Text className="font-semibold">{order.payment_status}</Text>
           </Text>
+          {order.distance_from_driver != null && (
+            <Text className="text-gray-700">
+              <MaterialCommunityIcons name="bike" size={16} color="gray" /> Distance From Order:{" "}
+              <Text className="font-semibold">{order.distance_from_driver}km</Text>
+            </Text>
+          )}
         </View>
 
         {/* Items Section */}
@@ -164,6 +192,18 @@ export default function OrderDetailsScreen() {
             <Text className="text-gray-600">No items found.</Text>
           )}
         </View>
+        <View className="bg-white p-4 rounded-xl shadow mb-4 border border-gray-200">
+          <Text className="text-lg font-semibold text-gray-800 mb-2 flex-row items-center">
+            <Feather name="map" size={18} color="gray" /> Delivery Location
+          </Text>
+          <TouchableOpacity
+            onPress={handleNavigation}
+            className="mt-4 bg-blue-600 px-4 py-2 rounded-lg"
+          >
+            <Text className="text-white text-center font-semibold">Navigate to Delivery</Text>
+          </TouchableOpacity>
+        </View>
+
 
         {/* Timeline Section */}
         <View className="bg-white p-4 rounded-xl shadow mb-6 border border-gray-200">

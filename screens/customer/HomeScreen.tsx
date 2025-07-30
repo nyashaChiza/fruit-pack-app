@@ -21,8 +21,8 @@ import { getToken } from "../../services/authServices";
 
 // Dummy ads instead of banner images
 const dummyAds = [
-  { id: "ad1", title: "Fresh Mangoes Sale!", description: "Up to 30% off" },
-  { id: "ad2", title: "Organic Apples", description: "Only this week" },
+  { id: "ad1", title: "Fresh Mangoes Sale!", description: "amazing prices" },
+  { id: "ad2", title: "Organic Apples", description: "fresh produce" },
   { id: "ad3", title: "Exotic Fruits Delivered", description: "Try now!" },
   { id: "ad4", title: "Seasonal Discounts", description: "Limited time offer" },
 ];
@@ -172,8 +172,8 @@ return (
     <ScrollView horizontal showsHorizontalScrollIndicator={false} className="mb-4">
       {dummyAds.map((ad) => (
         <View key={ad.id} className="w-72 h-40 bg-green-300 rounded-2xl mr-4 p-5 justify-center shadow-sm">
-          <Text className="text-white font-bold text-3xl mb-2">
-            <Feather name="info" size={22} color="white" /> {ad.title}
+          <Text className="text-white  font-bold text-4xl mb-2">
+            <Feather name="tag" size={22} color="white" /> {ad.title}
           </Text>
           <Text className="text-white text-lg">{ad.description}</Text>
         </View>

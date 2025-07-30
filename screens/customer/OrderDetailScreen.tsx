@@ -6,13 +6,13 @@ import {
   TouchableOpacity,
   ActivityIndicator,
   SafeAreaView,
-  Alert,
 } from "react-native";
-import { Feather, MaterialIcons } from '@expo/vector-icons';
+import { Feather, MaterialIcons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useRoute, useNavigation } from "@react-navigation/native";
 import api from "../../services/api";
 import { getToken } from "../../services/authServices";
 import BottomNavigation from "../../components/common/BottomNavigation";
+import { showToast } from '../../services/toastService';
 
 export default function OrderDetailScreen() {
   const route = useRoute();
@@ -33,7 +33,7 @@ export default function OrderDetailScreen() {
         setOrder(res.data);
       } catch (err) {
         console.error("Error fetching order:", err);
-        Alert.alert("Error", "Failed to load order details.");
+        showToast('error', 'Error', 'Failed to load order details.');
       } finally {
         setLoading(false);
       }
@@ -45,10 +45,11 @@ export default function OrderDetailScreen() {
   const confirmDelivery = async () => {
     try {
       await api.post(`/orders/${selectedOrder.id}/confirm-delivery`);
-      Alert.alert("Success", "Order confirmed as completed");
-      navigation.goBack(); // ✅ Fix: use navigation, not route
+      showToast('success', 'Delivery Confirmed', 'Thank you for confirming the delivery.');
+      navigation.navigate("OrderList");
     } catch (err) {
-      Alert.alert("Error", "Could not confirm delivery");
+      console.error("Error confirming delivery:", err);
+      showToast('error', 'Error', 'Failed to confirm delivery. Please try again later.');
     }
   };
 
@@ -94,7 +95,7 @@ export default function OrderDetailScreen() {
         {/* Order Summary */}
         <View className="bg-white p-4 rounded-xl border border-gray-200 shadow-sm mb-4">
           <View className="flex-row justify-between items-center mb-2">
-            <Text className="text-xl font-bold text-gray-800">Order #{order.id}</Text>
+            <Text className="text-xl font-bold text-gray-800">Order #{order.order_number}</Text>
             <Feather name="package" size={20} color="green" />
           </View>
           <Text className="text-green-600 font-bold mb-1">
@@ -107,10 +108,17 @@ export default function OrderDetailScreen() {
             <MaterialIcons name="local-shipping" size={16} color="gray" /> Delivery Status:{" "}
             <Text className="font-semibold">{order.delivery_status}</Text>
           </Text>
-          <Text className="text-gray-700">
+          <Text className="text-gray-700 mb-1">
             <Feather name="credit-card" size={16} color="gray" /> Payment Status:{" "}
             <Text className="font-semibold">{order.payment_status}</Text>
           </Text>
+          {order.distance_from_driver != null && (
+            <Text className="text-gray-700">
+              <MaterialCommunityIcons name="bike" size={16} color="gray" /> Distance From Driver:{" "}
+              <Text className="font-semibold">{order.distance_from_driver}km</Text>
+            </Text>
+          )}
+
         </View>
 
         {/* Items Section */}
@@ -132,6 +140,7 @@ export default function OrderDetailScreen() {
             <Text className="text-gray-600">No items found.</Text>
           )}
         </View>
+        
 
         {/* Timeline Section */}
         <View className="bg-white p-4 rounded-xl shadow mb-6 border border-gray-200">
@@ -172,7 +181,7 @@ export default function OrderDetailScreen() {
       {/* Bottom Nav Stub */}
       <BottomNavigation />
     </SafeAreaView>
-    
+
 
   );
 }

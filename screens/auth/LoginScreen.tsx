@@ -1,17 +1,15 @@
 import { useState } from "react";
 import { Feather, MaterialIcons } from '@expo/vector-icons';
-
-
 import {
   Text,
   TextInput,
   TouchableOpacity,
   View,
   KeyboardAvoidingView,
-  Platform,
-  Alert,
+  Platform
 } from "react-native";
 import { useAuth } from "../../hooks/useAuth";
+import { showToast } from "services/toastService";
 import { useNavigation } from '@react-navigation/native';
 
 export default function LoginScreen() {
@@ -22,14 +20,14 @@ export default function LoginScreen() {
 
   const handleLogin = async () => {
     if (!username || !password) {
-      Alert.alert("Missing Fields", "Please enter both username and password");
+      showToast('error', 'Missing Fields', 'Please enter both username and password');
       return;
     }
 
     try {
       await loginUser(username, password);
     } catch (err) {
-      Alert.alert("Login Failed", "Invalid credentials or server error");
+      showToast('error', 'Login Failed', 'Invalid user credentials');
     }
   };
 
@@ -88,7 +86,7 @@ export default function LoginScreen() {
 
         {/* Back Button */}
         <TouchableOpacity
-          onPress={() => navigation.navigate('SignupScreen')}
+          onPress={() => navigation.navigate('SignUp')}
           className="bg-gray-200 py-3 rounded-lg items-center mt-3 flex-row justify-center"
         >
           <Feather name="arrow-left" size={18} color="#333" style={{ marginRight: 6 }} />

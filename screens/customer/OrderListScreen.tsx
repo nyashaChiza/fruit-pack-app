@@ -3,7 +3,7 @@ import {
   View,
   Text,
   FlatList,
-  Alert,
+
   TouchableOpacity,
   ActivityIndicator,
   SafeAreaView,
@@ -16,6 +16,7 @@ import api from "../../services/api";
 import { getToken } from "../../services/authServices";
 import { getUserId } from "../../services/userServices";
 import { Order } from "../../types";
+import { showToast } from '../../services/toastService';
 
 
 export default function OrdersListScreen() {
@@ -28,13 +29,13 @@ export default function OrdersListScreen() {
       try {
         const token = await getToken();
         if (!token) {
-          Alert.alert("Unauthorized", "Please log in.");
+          showToast('error', 'Unauthorized', 'Please log in to view your orders.');
           return;
         }
         const userId = await getUserId(token);
 
         if (!userId) {
-          Alert.alert("Unauthorized", "Please log in.");
+          showToast('error', 'User Not Found', 'Could not retrieve user information.');
           return;
         }
 
@@ -43,7 +44,7 @@ export default function OrdersListScreen() {
         setOrders(response.data);
       } catch (err: any) {
         console.info("Fetch orders error:", err.response?.data || err.message);
-        Alert.alert( "Could not fetch orders.");
+        showToast('info', 'Notification', err.response?.data?.detail || 'Failed to load orders.');
       } finally {
         setLoading(false);
       }
@@ -70,7 +71,7 @@ const renderOrder = ({ item, index }: { item: Order; index: number }) => (
   
   <View className="flex-row justify-between items-center mb-2 ">
     <Text className="text-base font-semibold text-green-900">
-      Order #{item.id}
+      Order #{item.order_number}
     </Text>
     <View
       className={`px-2 py-0.5 rounded-full ${
