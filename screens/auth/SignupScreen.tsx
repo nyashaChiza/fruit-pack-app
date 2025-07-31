@@ -12,21 +12,29 @@ import { Feather, MaterialIcons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { useAuth } from '../../hooks/useAuth';
 
-
 export default function SignupScreen() {
   const [email, setEmail] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [username, setUsername] = useState('');
   const [fullName, setFullName] = useState('');
   const [password, setPassword] = useState('');
+  const [verifyPassword, setVerifyPassword] = useState('');
   const navigation = useNavigation();
 
   const { signupUser } = useAuth();
 
   const handleSignup = async () => {
     setIsLoading(true);
-    if (!email || !password || !username || !fullName) {
+
+    if (!email || !password || !verifyPassword || !username || !fullName) {
       showToast('error', 'Missing Fields', 'Please fill in all required fields.');
+      setIsLoading(false);
+      return;
+    }
+
+    if (password !== verifyPassword) {
+      showToast('error', 'Password Mismatch', 'Passwords do not match. Please try again.');
+      setIsLoading(false);
       return;
     }
 
@@ -37,6 +45,8 @@ export default function SignupScreen() {
     } catch (e) {
       console.error(e);
       showToast('error', 'Signup Failed', 'Please try again later.');
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -102,6 +112,20 @@ export default function SignupScreen() {
             autoComplete="password"
             value={password}
             onChangeText={setPassword}
+          />
+        </View>
+
+        {/* Verify Password */}
+        <View className="flex-row items-center bg-green-50 rounded-lg mb-4 px-3 py-2">
+          <Feather name="lock" size={18} color="#4CAF50" style={{ marginRight: 6 }} />
+          <TextInput
+            className="flex-1 text-base text-gray-800 py-3"
+            placeholder="Verify Password"
+            placeholderTextColor="#8c9aa8ff"
+            secureTextEntry
+            autoComplete="password"
+            value={verifyPassword}
+            onChangeText={setVerifyPassword}
           />
         </View>
 
