@@ -31,7 +31,7 @@ export default function CustomerHomeScreen() {
   const [token, setToken] = useState<string | null>(null);
   const [categories, setCategories] = useState<Category[]>([]);
   const [fruits, setFruits] = useState<Product[]>([]);
-  const [selectedCategory, setSelectedCategory] = useState<number | null>(null);
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [cachedImages, setCachedImages] = useState<Record<string, string>>({});
   const [searchTerm, setSearchTerm] = useState("");
   const [loading, setLoading] = useState(true);
@@ -97,7 +97,7 @@ export default function CustomerHomeScreen() {
 
   const filteredFruits = fruits.filter((fruit: Product) => {
     const matchesSearch = fruit.name.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesCategory = selectedCategory === null || fruit.category_id === selectedCategory;
+    const matchesCategory = selectedCategory === null || fruit.category_name === selectedCategory;
     return matchesSearch && matchesCategory;
   });
 
@@ -117,7 +117,7 @@ export default function CustomerHomeScreen() {
             cachedImages[item.id] ||
             `${api.defaults.baseURL}products/images/${item.image}`,
         }}
-        className="w-24 h-24 rounded-l-2xl"
+        className="w-24  rounded-l-2xl"
       />
       <View className="flex-1 p-4 justify-center">
         <Text className="text-lg font-semibold text-green-800">{item.name}</Text>
@@ -186,11 +186,11 @@ export default function CustomerHomeScreen() {
           </View>
           <ScrollView horizontal showsHorizontalScrollIndicator={false}>
             {categories.map((cat: any) => {
-              const isSelected = selectedCategory === cat.id;
+              const isSelected = selectedCategory === cat.name;
               return (
                 <TouchableOpacity
                   key={cat.id}
-                  onPress={() => setSelectedCategory(isSelected ? null : cat.id)}
+                  onPress={() => setSelectedCategory(isSelected ? null : cat.name)}
                   className={`rounded-xl px-5 py-3 mr-4 items-center justify-center ${isSelected ? "bg-green-200" : "bg-white"}`}
                 >
                   <View className="mb-1">

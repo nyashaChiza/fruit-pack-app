@@ -18,7 +18,7 @@ import { showToast } from "services/toastService";
 export default function ClaimDetailScreen() {
   const route = useRoute();
   const navigation = useNavigation();
-  const { order: selectedOrder, claim:SelectedClaim } = route.params as { order: any };
+  const { order: selectedOrder, claim: SelectedClaim } = route.params as { order: any };
   const [token, setToken] = useState<string | null>(null);
   const [order, setOrder] = useState<any>(null);
   const [loading, setLoading] = useState(true);
@@ -61,7 +61,7 @@ export default function ClaimDetailScreen() {
         status: 'delivered',
       });
       showToast('success', 'Claim Rejected', 'The claim has been rejected successfully.');
-      navigation.navigate('DriverHome'); 
+      navigation.navigate('DriverHome');
     } catch (err) {
       console.error("Error rejecting claim:", err);
       showToast('error', 'Error', err.response?.data?.detail || 'Failed to reject claim.');
@@ -69,7 +69,7 @@ export default function ClaimDetailScreen() {
       setLoading(false);
     }
   };
-    const acceptClaim = async () => {
+  const acceptClaim = async () => {
     try {
       api.defaults.headers.common["Authorization"] = `Bearer ${token}`;
       await api.post(`/claims/driver/claims/${SelectedClaim.id}/approve`);
@@ -199,9 +199,10 @@ export default function ClaimDetailScreen() {
               <Feather name="check" size={18} color="white" style={{ marginRight: 8 }} />
               <Text className="text-white font-semibold">Accept Claim</Text>
             </TouchableOpacity>
+
           )}
 
-          
+          {order.delivery_status === 'pending' && (
             <TouchableOpacity
               className="bg-red-600 py-3 mt-4 rounded-lg items-center flex-row justify-center"
               onPress={rejectClaim}
@@ -209,11 +210,11 @@ export default function ClaimDetailScreen() {
               <Feather name="x" size={18} color="white" style={{ marginRight: 8 }} />
               <Text className="text-white font-semibold">Reject Claim</Text>
             </TouchableOpacity>
-    
+          )}
 
         </View>
       </ScrollView>
-
+      <View className="pb-24" />
       {/* Bottom Nav Stub */}
       <DriverBottomNavigation />
     </SafeAreaView>

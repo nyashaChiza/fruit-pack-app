@@ -75,7 +75,7 @@ export default function CartScreen() {
   </ScrollView>
 
   {cart.length > 0 && (
-    <View className="absolute bottom-24 left-4 right-4 bg-white p-4 rounded-xl shadow-lg">
+    <View className="absolute bottom-24 left-4 right-4 bg-white p-4 rounded-xl shadow-lg mb-12">
       <Text className="text-xl font-bold text-green-900 mb-2">
         <Feather name="credit-card" size={18} color="green" /> Total: R{total.toFixed(2)}
       </Text>
@@ -87,6 +87,7 @@ export default function CartScreen() {
   )}
 
   <View className="absolute bottom-0 left-0 right-0">
+    
     <BottomNavigation />
   </View>
 </SafeAreaView>

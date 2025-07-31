@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   ActivityIndicator,
   SafeAreaView,
+  Linking
 } from "react-native";
 import { Feather, MaterialIcons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useRoute, useNavigation } from "@react-navigation/native";
@@ -18,9 +19,10 @@ export default function OrderDetailScreen() {
   const route = useRoute();
   const navigation = useNavigation();
   const { order: selectedOrder } = route.params as { order: any }; // ✅ Fix naming and typing
-
+  const [driverDetails, setDriverDetails] = useState<any>(null);
   const [order, setOrder] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+
 
   useEffect(() => {
     const fetchOrder = async () => {
@@ -42,6 +44,44 @@ export default function OrderDetailScreen() {
     fetchOrder();
   }, [selectedOrder]);
 
+  useEffect(() => {
+    const fetchDriverDetails = async () => {
+      try {
+        const token = await getToken();
+        if (!token || !selectedOrder?.driver_id) return;
+
+        api.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+        const res = await api.get(`/drivers/${selectedOrder.driver_id}`);
+        setDriverDetails(res.data);
+      } catch (err) {
+        console.error("Error fetching order:", err);
+        showToast('error', 'Error', 'Failed to load driver details.');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchDriverDetails();
+  }, [driverDetails]);
+
+  const handleNavigation = () => {
+    if (
+      !driverDetails?.latitude || !driverDetails?.longitude ||
+      !order?.destination_latitude || !order?.destination_longitude
+    ) {
+      showToast('error', 'Error', 'Driver or order location not available.');
+      return;
+    }
+
+    const origin = `${driverDetails.latitude},${driverDetails.longitude}`;
+    const destination = `${order.destination_latitude},${order.destination_longitude}`;
+    const url = `https://www.google.com/maps/dir/?api=1&origin=${origin}&destination=${destination}&travelmode=driving`;
+
+    Linking.openURL(url).catch(err => {
+      console.error("Failed to open Google Maps:", err);
+      showToast('error', 'Error', 'Failed to open navigation. Please try again later.');
+    });
+  };
   const confirmDelivery = async () => {
     try {
       await api.post(`/orders/${selectedOrder.id}/confirm-delivery`);
@@ -143,6 +183,19 @@ export default function OrderDetailScreen() {
             <Text className="text-gray-600">No items found.</Text>
           )}
         </View>
+        { order.delivery_status =='shipped' && driverDetails?.latitude && driverDetails?.longitude && (
+          <View className="bg-white p-4 rounded-xl shadow mb-4 border border-gray-200">
+            <Text className="text-lg font-semibold text-gray-800 mb-2 flex-row items-center">
+              <Feather name="map" size={18} color="gray" /> Delivery Location
+            </Text>
+            <TouchableOpacity
+              onPress={handleNavigation}
+              className="mt-4 bg-green-600 px-4 py-2 rounded-lg"
+            >
+              <Text className="text-white text-center font-semibold">View Driver Location</Text>
+            </TouchableOpacity>
+          </View>
+        )}
 
 
         {/* Timeline Section */}
@@ -180,7 +233,7 @@ export default function OrderDetailScreen() {
           )}
         </View>
       </ScrollView>
-
+<View className="pb-24" />
       {/* Bottom Nav Stub */}
       <BottomNavigation />
     </SafeAreaView>

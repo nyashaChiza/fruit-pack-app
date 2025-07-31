@@ -192,6 +192,7 @@ export default function OrderDetailsScreen() {
             <Text className="text-gray-600">No items found.</Text>
           )}
         </View>
+        { order.delivery_status =='shipped' &&  (
         <View className="bg-white p-4 rounded-xl shadow mb-4 border border-gray-200">
           <Text className="text-lg font-semibold text-gray-800 mb-2 flex-row items-center">
             <Feather name="map" size={18} color="gray" /> Delivery Location
@@ -203,10 +204,11 @@ export default function OrderDetailsScreen() {
             <Text className="text-white text-center font-semibold">Navigate to Delivery</Text>
           </TouchableOpacity>
         </View>
+        )}
 
 
         {/* Timeline Section */}
-        <View className="bg-white p-4 rounded-xl shadow mb-6 border border-gray-200">
+        <View className="bg-white p-4 rounded-xl shadow mb-12 border border-gray-200">
           <Text className="text-lg font-semibold text-gray-800 mb-3 flex-row items-center">
             <Feather name="clock" size={18} color="gray" /> Order Status Timeline
           </Text>
@@ -250,7 +252,7 @@ export default function OrderDetailsScreen() {
 
         </View>
       </ScrollView>
-
+      <View className="pb-24" />
       {/* Bottom Nav Stub */}
       <DriverBottomNavigation />
     </SafeAreaView>

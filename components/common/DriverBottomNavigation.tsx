@@ -8,7 +8,7 @@ export default function DriverBottomNavigation() {
     const { logoutUser } = useAuth();
 
     return (
-        <View className="absolute bottom-0 left-0 right-0 bg-white flex-row justify-around items-center py-6 px-4 border-t border-gray-300 shadow-md w-full z-50">
+        <View className="absolute bottom-0 left-0 right-0 bg-white flex-row justify-around items-center mt-6 py-6 px-4 border-t border-gray-300 shadow-md w-full z-50">
             <View className="flex-row bg-white rounded-xl shadow-md overflow-hidden">
                 {/* 🏠 Home */}
                 <TouchableOpacity
