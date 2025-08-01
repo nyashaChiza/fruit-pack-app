@@ -38,3 +38,10 @@ export type CartItem = {
   image_name?: string;
   quantity: number;
 };
+
+export type Advert = {
+  id: number;
+  title: string;
+  description: string;
+  status: string;
+};

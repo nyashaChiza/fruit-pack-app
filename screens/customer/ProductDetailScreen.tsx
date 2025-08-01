@@ -38,7 +38,7 @@ export default function ProductDetailScreen() {
         const savedToken = await getToken();
         setToken(savedToken);
       } catch (err) {
-        console.error("Error fetching token:", err);
+        showToast("error",'Error','Error fetching token');
       }
     };
     fetchToken();
@@ -54,7 +54,8 @@ export default function ProductDetailScreen() {
         setProduct(res.data);
         setRelatedProducts(res.data.related_products || []);
       } catch (err: any) {
-        console.error(`Error fetching product with ID ${SelectedProduct.id}:`, err);
+        showToast("error",'Error',`Error fetching product with ID ${SelectedProduct.id}`);
+
       } finally {
         setLoadingProduct(false);
       }
@@ -81,7 +82,7 @@ export default function ProductDetailScreen() {
           setLocalImageUri(localUri);
         }
       } catch (err: any) {
-        console.error("Error downloading image:", err);
+        showToast("error",'Error','Error downloading image');
         setLocalImageUri(null);
       } finally {
         setLoadingImage(false);

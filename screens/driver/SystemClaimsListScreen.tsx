@@ -43,7 +43,7 @@ export default function SystemClaimListScreen() {
                 const res = await api.get(`/claims/system/${driverDetails.id}/claims`);
                 setClaims(res.data);
             } catch (err) {
-                showToast('info', 'Notification', err.response?.data?.detail || 'Failed to load system claims.');
+                showToast('info', 'Info', err.response?.data?.detail || 'Failed to load system claims.');
             } finally {
                 setLoading(false);
             }
@@ -65,7 +65,6 @@ export default function SystemClaimListScreen() {
 
             navigation.navigate("ClaimDetail", { order, claim });
         } catch (err) {
-            console.error("Error fetching claim details:", err);
             showToast('error', 'Error', err.response?.data?.detail || 'Failed to load claim details.');
         }
     };

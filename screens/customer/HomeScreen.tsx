@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { use, useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -13,17 +13,12 @@ import { Feather } from "@expo/vector-icons";
 import BottomNavigation from "../../components/common/BottomNavigation";
 import { useNavigation } from "@react-navigation/native";
 import * as FileSystem from "expo-file-system";
-import { Product, Category } from "../../types";
+import { Product, Category, Advert } from "../../types";
 import api from "../../services/api";
 import { getToken } from "../../services/authServices";
+import { showToast } from "services/toastService";
 
-// Dummy ads instead of banner images
-const dummyAds = [
-  { id: "ad1", title: "Fresh Mangoes Sale!", description: "amazing prices" },
-  { id: "ad2", title: "Organic Apples", description: "fresh produce" },
-  { id: "ad3", title: "Exotic Fruits Delivered", description: "Try now!" },
-  { id: "ad4", title: "Seasonal Discounts", description: "Limited time offer" },
-];
+
 
 export default function CustomerHomeScreen() {
   const navigation = useNavigation();
@@ -34,6 +29,7 @@ export default function CustomerHomeScreen() {
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [cachedImages, setCachedImages] = useState<Record<string, string>>({});
   const [searchTerm, setSearchTerm] = useState("");
+  const[adverts, setAdverts] = useState<Advert[]>([])
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -53,11 +49,26 @@ export default function CustomerHomeScreen() {
         const res = await api.get("/categories/");
         setCategories(res.data);
       } catch (err: any) {
-        console.error("Failed to fetch categories", err);
+        showToast('error', 'Error', 'Failed to load categories.');
       }
     };
 
     fetchCategories();
+  }, [token]);
+
+  useEffect(() => {
+    if (!token) return;
+    const fetchAdverts = async () => {
+      try {
+        api.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+        const res = await api.get("/adverts/");
+        setAdverts(res.data);
+      } catch (err: any) {
+
+        showToast('error', 'Error', 'Failed to load adverts.');
+      }
+    };
+    fetchAdverts();
   }, [token]);
 
   useEffect(() => {
@@ -86,7 +97,7 @@ export default function CustomerHomeScreen() {
         );
         setCachedImages(imageMap);
       } catch (err: any) {
-        console.error("Failed to fetch fruits", err);
+        showToast('error', 'Error', 'Failed to load fruits.');
       } finally {
         setLoading(false);
       }
@@ -119,7 +130,7 @@ export default function CustomerHomeScreen() {
         }}
         className="w-24  rounded-l-2xl"
       />
-      <View className="flex-1 p-4 justify-center">
+      <View className="flex-1 p-4 justify-center border border-gray-50 ">
         <Text className="text-lg font-semibold text-green-800">{item.name}</Text>
         <Text className="text-green-700 font-bold text-base mt-1">
           R{item.price?.toFixed(2)} / {item.unit}
@@ -165,7 +176,7 @@ export default function CustomerHomeScreen() {
 
         {/* Ads Carousel */}
         <ScrollView horizontal showsHorizontalScrollIndicator={false} className="mb-4">
-          {dummyAds.map((ad) => (
+          {adverts.map((ad) => (
             <View key={ad.id} className="w-72 h-40 bg-green-300 rounded-2xl mr-4 p-5 justify-center shadow-sm">
               <Text className="text-white font-bold text-4xl mb-2">
                 <Feather name="tag" size={22} color="white" /> {ad.title}

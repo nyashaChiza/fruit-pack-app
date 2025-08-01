@@ -44,7 +44,6 @@ export default function ClaimDetailScreen() {
         const res = await api.get(`/orders/${selectedOrder.id}`);
         setOrder(res.data);
       } catch (err) {
-        console.error("Error fetching order:", err);
         showToast('error', 'Error', 'Failed to load order details.');
       } finally {
         setLoading(false);
@@ -63,7 +62,6 @@ export default function ClaimDetailScreen() {
       showToast('success', 'Claim Rejected', 'The claim has been rejected successfully.');
       navigation.navigate('DriverHome');
     } catch (err) {
-      console.error("Error rejecting claim:", err);
       showToast('error', 'Error', err.response?.data?.detail || 'Failed to reject claim.');
     } finally {
       setLoading(false);
@@ -76,7 +74,6 @@ export default function ClaimDetailScreen() {
       showToast('success', 'Claim Accepted', 'The claim has been accepted successfully.');
       navigation.navigate('DriverHome'); // Navigate back after successful delivery
     } catch (err) {
-      console.error("Error accepting claim:", err);
       showToast('error', 'Error', err.response?.data?.detail || 'Failed to accept claim.');
     }
   };

@@ -38,7 +38,7 @@ export default function DriverOrderListScreen() {
         setOrders(res.data);
       } catch (err) {
 
-        showToast('info', 'Notification', err.response?.data?.detail || 'Failed to load assigned orders.');
+        showToast('info', 'Info', err.response?.data?.detail || 'Failed to load assigned orders.');
       } finally {
         setLoading(false);
       }

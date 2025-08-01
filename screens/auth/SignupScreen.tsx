@@ -43,7 +43,6 @@ export default function SignupScreen() {
       showToast('success', 'Signup Successful', 'You can now log in with your credentials.');
       navigation.navigate('LogIn');
     } catch (e) {
-      console.error(e);
       showToast('error', 'Signup Failed', 'Please try again later.');
     } finally {
       setIsLoading(false);

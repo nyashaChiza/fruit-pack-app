@@ -3,12 +3,13 @@ import * as TaskManager from 'expo-task-manager';
 import api from './api';
 import { getToken } from './authServices';
 import { getDriverDetails } from './userServices';
+import { showToast } from "services/toastService";
 
 const LOCATION_TASK_NAME = 'background-location-task';
 
 TaskManager.defineTask(LOCATION_TASK_NAME, async ({ data, error }) => {
   if (error) {
-    console.error('Background location error:', error);
+    showToast("error",'Error','Background location error');
     return;
   }
 
@@ -30,7 +31,8 @@ TaskManager.defineTask(LOCATION_TASK_NAME, async ({ data, error }) => {
 
       console.log(`📍 Location shared: ${latitude}, ${longitude}`);
     } catch (err) {
-      console.error('❌ Failed to share location in background:', err?.response?.data?.detail || err.message);
+      showToast("error",'Error','Failed to share location in background');
+      
     }
   }
 });

@@ -44,7 +44,7 @@ export default function OrdersListScreen() {
         setOrders(response.data);
       } catch (err: any) {
         console.info("Fetch orders error:", err.response?.data || err.message);
-        showToast('info', 'Notification', err.response?.data?.detail || 'Failed to load orders.');
+        showToast('info', 'Info', err.response?.data?.detail || 'Failed to load orders.');
       } finally {
         setLoading(false);
       }
@@ -111,7 +111,7 @@ const renderOrder = ({ item, index }: { item: Order; index: number }) => (
       
 <View className="flex-1">
         <Text className="text-2xl font-bold text-green-800 mt-6 mb-4 text-center">
-          My Orders
+          <Feather name="shopping-bag" size={22} color="green" />My Orders
         </Text>
 
         {loading ? (

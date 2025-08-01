@@ -45,7 +45,6 @@ export default function OrderDetailsScreen() {
         const res = await api.get(`/orders/${selectedOrder.id}`);
         setOrder(res.data);
       } catch (err) {
-        console.error("Error fetching order:", err);
         showToast('error', 'Error', 'Failed to load order details.');
       } finally {
         setLoading(false);
@@ -64,7 +63,6 @@ export default function OrderDetailsScreen() {
       showToast('success', 'Order Delivered', 'Thank you for delivering the order.');
       navigation.navigate('DriverHome'); // Navigate back after successful delivery
     } catch (err) {
-      console.error("Error delivering order:", err);
       showToast('error', 'Error', 'Failed to deliver order. Please try again later.');
     } finally {
       setLoading(false);
@@ -81,7 +79,6 @@ export default function OrderDetailsScreen() {
       showToast('success', 'Order Claimed', 'You have successfully claimed the order.');
       navigation.navigate('DriverHome'); // Navigate back after successful delivery
     } catch (err) {
-      console.error("Error claiming order:", err);
       showToast('error', 'Error', err.response?.data?.detail || 'Failed to claim order.');
     }
   };
@@ -100,7 +97,6 @@ export default function OrderDetailsScreen() {
     const url = `https://www.google.com/maps/dir/?api=1&origin=${origin}&destination=${destination}&travelmode=driving`;
 
     Linking.openURL(url).catch(err => {
-      console.error("Failed to open Google Maps:", err);
       showToast('error', 'Error', 'Failed to open navigation. Please try again later.');
     });
   };

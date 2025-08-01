@@ -34,7 +34,6 @@ export default function OrderDetailScreen() {
         const res = await api.get(`/orders/${selectedOrder.id}`);
         setOrder(res.data);
       } catch (err) {
-        console.error("Error fetching order:", err);
         showToast('error', 'Error', 'Failed to load order details.');
       } finally {
         setLoading(false);
@@ -54,7 +53,6 @@ export default function OrderDetailScreen() {
         const res = await api.get(`/drivers/${selectedOrder.driver_id}`);
         setDriverDetails(res.data);
       } catch (err) {
-        console.error("Error fetching order:", err);
         showToast('error', 'Error', 'Failed to load driver details.');
       } finally {
         setLoading(false);
@@ -78,7 +76,6 @@ export default function OrderDetailScreen() {
     const url = `https://www.google.com/maps/dir/?api=1&origin=${origin}&destination=${destination}&travelmode=driving`;
 
     Linking.openURL(url).catch(err => {
-      console.error("Failed to open Google Maps:", err);
       showToast('error', 'Error', 'Failed to open navigation. Please try again later.');
     });
   };
@@ -88,7 +85,6 @@ export default function OrderDetailScreen() {
       showToast('success', 'Delivery Confirmed', 'Thank you for confirming the delivery.');
       navigation.navigate("OrderList");
     } catch (err) {
-      console.error("Error confirming delivery:", err);
       showToast('error', 'Error', 'Failed to confirm delivery. Please try again later.');
     }
   };
@@ -130,7 +126,9 @@ export default function OrderDetailScreen() {
   return (
     <SafeAreaView className="flex-1 bg-green-50">
       <ScrollView className="flex-1 px-4 pt-6" showsVerticalScrollIndicator={false}>
-        <Text className="text-2xl font-bold text-green-800 mb-4 text-center">Order Details</Text>
+        <Text className="text-2xl font-bold text-green-800 mb-4 text-center">
+          <Feather name="shopping-bag" size={22} color="green" /> Order Details
+          </Text>
 
         {/* Order Summary */}
         <View className="bg-white p-4 rounded-xl border border-gray-200 shadow-sm mb-4">
@@ -159,8 +157,17 @@ export default function OrderDetailScreen() {
                 <MaterialCommunityIcons name="bike" size={16} color="gray" /> Distance From Driver:{" "}
                 <Text className="font-semibold">{order.distance_from_driver}km</Text>
               </Text>
+              
             )}
-
+{driverDetails != null && order.distance_from_driver != null &&
+            order.delivery_status !== "delivered" &&
+            order.delivery_status !== "completed" && (
+              <Text className="text-gray-700">
+                <MaterialCommunityIcons name="car-door" size={16} color="gray" /> Vehicle :{" "}
+                <Text className="font-semibold">{driverDetails.vehicle_number}</Text>
+              </Text>
+              
+            )}
 
         </View>
 

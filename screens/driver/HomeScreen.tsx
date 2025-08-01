@@ -89,7 +89,6 @@ export default function HomeScreen() {
         await api.patch(`/drivers/${driverDetails.id}/status`, { status: newStatus });
       }
     } catch (err: any) {
-      console.error("Error updating driver status:", err);
       showToast('error', 'Error', err?.response?.data?.detail || 'Failed to update status');
       setOnline(online); // revert on error
     }
@@ -117,7 +116,6 @@ export default function HomeScreen() {
 
       showToast('success', 'Location Shared', 'Your live location has been shared successfully.');
     } catch (err: any) {
-      console.error('Error sharing live location:', err);
       showToast('error', 'Error', err?.response?.data?.detail || 'Failed to share live location.');
     }
   };

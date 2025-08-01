@@ -90,7 +90,6 @@ export const placeOrder = async ({
 
     clearCart();
   } catch (err: any) {
-    console.error('Checkout error:', err.response?.data || err.message);
     showToast('error', 'Checkout Error', err.response?.data?.detail || 'Failed to place order.');
   }
 };

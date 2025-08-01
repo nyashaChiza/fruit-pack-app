@@ -40,7 +40,7 @@ export default function ClaimListScreen() {
         setClaims(res.data);
       } catch (err) {
 
-        showToast('info', 'Notification', err.response?.data?.detail || 'Failed to load driver claims.');
+        showToast('info', 'Info', err.response?.data?.detail || 'Failed to load driver claims.');
       } finally {
         setLoading(false);
       }

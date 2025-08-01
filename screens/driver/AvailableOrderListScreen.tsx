@@ -37,7 +37,7 @@ export default function AvailableOrderListScreen() {
         const res = await api.get(`/orders/available/orders`);
         setOrders(res.data);
       } catch (err) {
-        showToast('info', 'Notification', err.response?.data?.detail || 'Failed to load available orders.');
+        showToast('info', 'Info', err.response?.data?.detail || 'Failed to load available orders.');
       } finally {
         setLoading(false);
       }

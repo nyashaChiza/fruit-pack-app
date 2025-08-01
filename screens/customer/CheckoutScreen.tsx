@@ -88,7 +88,9 @@ export default function CheckoutScreen() {
   return (
     <SafeAreaView className="flex-1 bg-green-50">
       <ScrollView className="px-4 pt-6 pb-36">
-        <Text className="text-2xl font-bold text-center mb-6 text-gray-900">Checkout</Text>
+        <Text className="text-2xl font-bold text-center mb-6 text-gray-900">
+          <Feather name="shopping-cart" size={22} color="green" /> Checkout
+          </Text>
 
         {/* 🚚 Delivery Info */}
         <View className="bg-white rounded-xl p-4 shadow mb-6">

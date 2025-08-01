@@ -38,7 +38,7 @@ export default function CompleteOrderListScreen() {
         setOrders(res.data);
       } catch (err) {
         console.info("Error fetching delivered orders:", err);
-        showToast('info', 'Notification', err.response?.data?.detail || 'Failed to load delivered orders.');
+        showToast('info', 'Info', err.response?.data?.detail || 'Failed to load delivered orders.');
       } finally {
         setLoading(false);
       }
