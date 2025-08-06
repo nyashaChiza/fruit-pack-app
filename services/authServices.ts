@@ -1,5 +1,7 @@
 import api from './api';
 import * as SecureStore from 'expo-secure-store';
+import { registerForPushNotificationsAsync } from './notificationService';
+
 
 export async function login(username: string, password: string): Promise<string> {
   const formData = new URLSearchParams();
@@ -15,8 +17,18 @@ export async function login(username: string, password: string): Promise<string>
   if (!token) throw new Error('No access token returned.');
 
   await SecureStore.setItemAsync('token', token);
+
+  // 🔔 Register for push notifications and send token to backend
+  const pushToken = await registerForPushNotificationsAsync();
+  if (pushToken) {
+    console.log(pushToken)
+    api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+    await api.post('/users/users/push-token', { pushToken: pushToken });
+  }
+
   return token;
 }
+
 
 export async function signup(email: string, password: string) {
   const res = await api.post('/auth/signup', { email, password });

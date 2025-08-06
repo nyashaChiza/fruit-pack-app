@@ -128,7 +128,7 @@ export default function OrderDetailScreen() {
       <ScrollView className="flex-1 px-4 pt-6" showsVerticalScrollIndicator={false}>
         <Text className="text-2xl font-bold text-green-800 mb-4 text-center">
           <Feather name="shopping-bag" size={22} color="green" /> Order Details
-          </Text>
+        </Text>
 
         {/* Order Summary */}
         <View className="bg-white p-4 rounded-xl border border-gray-200 shadow-sm mb-4">
@@ -157,16 +157,16 @@ export default function OrderDetailScreen() {
                 <MaterialCommunityIcons name="bike" size={16} color="gray" /> Distance From Driver:{" "}
                 <Text className="font-semibold">{order.distance_from_driver}km</Text>
               </Text>
-              
+
             )}
-{driverDetails != null && order.distance_from_driver != null &&
+          {driverDetails != null && order.distance_from_driver != null &&
             order.delivery_status !== "delivered" &&
             order.delivery_status !== "completed" && (
               <Text className="text-gray-700">
                 <MaterialCommunityIcons name="car-door" size={16} color="gray" /> Vehicle :{" "}
                 <Text className="font-semibold">{driverDetails.vehicle_number}</Text>
               </Text>
-              
+
             )}
 
         </View>
@@ -190,7 +190,21 @@ export default function OrderDetailScreen() {
             <Text className="text-gray-600">No items found.</Text>
           )}
         </View>
-        { order.delivery_status =='shipped' && driverDetails?.latitude && driverDetails?.longitude && (
+
+        {order.delivery_status === 'shipped' && (
+          <View className="bg-white p-5 rounded-2xl shadow-sm mb-4 border border-gray-100">
+            <View className="flex-row items-center mb-3">
+              <MaterialIcons name="local-shipping" size={22} color="green" />
+              <Text className="ml-2 text-green-800 text-lg font-bold">Delivery Code</Text>
+            </View>
+            <View className="bg-green-50 py-4 px-6 rounded-xl border border-green-200">
+              <Text className="text-center text-3xl font-extrabold tracking-widest text-green-700">
+                {order.delivery_code}
+              </Text>
+            </View>
+          </View>
+        )}
+        {order.delivery_status == 'shipped' && driverDetails?.latitude && driverDetails?.longitude && (
           <View className="bg-white p-4 rounded-xl shadow mb-4 border border-gray-200">
             <Text className="text-lg font-semibold text-gray-800 mb-2 flex-row items-center">
               <Feather name="map" size={18} color="gray" /> Delivery Location
@@ -240,7 +254,7 @@ export default function OrderDetailScreen() {
           )}
         </View>
       </ScrollView>
-<View className="pb-24" />
+      <View className="pb-24" />
       {/* Bottom Nav Stub */}
       <BottomNavigation />
     </SafeAreaView>

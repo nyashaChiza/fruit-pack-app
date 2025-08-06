@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
+  TextInput,
   ScrollView,
   TouchableOpacity,
   ActivityIndicator,
@@ -25,6 +26,8 @@ export default function OrderDetailsScreen() {
   const [order, setOrder] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [driverDetails, setDriverDetails] = useState<any>(null);
+  const [deliveryCode, setDeliveryCode] = useState('');
+
 
   // Fetch user details and token on mount
   useEffect(() => {
@@ -54,21 +57,21 @@ export default function OrderDetailsScreen() {
     fetchOrder();
   }, [selectedOrder]);
 
-  const deliverOrder = async () => {
+  const deliverOrder = async (code: string) => {
     try {
       setLoading(true);
       await api.put(`/orders/${order.id}/status`, {
         status: 'delivered',
+        delivery_code: code, // Send the code to FastAPI
       });
       showToast('success', 'Order Delivered', 'Thank you for delivering the order.');
-      navigation.navigate('DriverHome'); // Navigate back after successful delivery
+      navigation.navigate('DriverHome');
     } catch (err) {
       showToast('error', 'Error', 'Failed to deliver order. Please try again later.');
     } finally {
       setLoading(false);
     }
-  };
-  const claimOrder = async () => {
+  }; const claimOrder = async () => {
     if (!driverDetails?.id) {
       showToast('error', 'Error', 'Driver details not found. Please try again later.');
       return;
@@ -188,18 +191,18 @@ export default function OrderDetailsScreen() {
             <Text className="text-gray-600">No items found.</Text>
           )}
         </View>
-        { order.delivery_status =='shipped' &&  (
-        <View className="bg-white p-4 rounded-xl shadow mb-4 border border-gray-200">
-          <Text className="text-lg font-semibold text-gray-800 mb-2 flex-row items-center">
-            <Feather name="map" size={18} color="gray" /> Delivery Location
-          </Text>
-          <TouchableOpacity
-            onPress={handleNavigation}
-            className="mt-4 bg-green-600 px-4 py-2 rounded-lg"
-          >
-            <Text className="text-white text-center font-semibold">Navigate to Delivery</Text>
-          </TouchableOpacity>
-        </View>
+        {order.delivery_status == 'shipped' && (
+          <View className="bg-white p-4 rounded-xl shadow mb-4 border border-gray-200">
+            <Text className="text-lg font-semibold text-gray-800 mb-2 flex-row items-center">
+              <Feather name="map" size={18} color="gray" /> Delivery Location
+            </Text>
+            <TouchableOpacity
+              onPress={handleNavigation}
+              className="mt-4 bg-green-600 px-4 py-2 rounded-lg"
+            >
+              <Text className="text-white text-center font-semibold">Navigate to Delivery</Text>
+            </TouchableOpacity>
+          </View>
         )}
 
 
@@ -236,14 +239,32 @@ export default function OrderDetailsScreen() {
             </TouchableOpacity>
           )}
 
+
+
           {order.delivery_status === 'shipped' && (
-            <TouchableOpacity
-              className="bg-green-600 py-3 mt-4 rounded-lg items-center flex-row justify-center"
-              onPress={deliverOrder}
-            >
-              <Feather name="check" size={18} color="white" style={{ marginRight: 8 }} />
-              <Text className="text-white font-semibold">Mark As Delivered</Text>
-            </TouchableOpacity>
+            <View className="mt-4">
+              {/* Delivery Code Input */}
+              <Text className="text-gray-700 font-medium mb-2">Enter Delivery Code</Text>
+              <TextInput
+                value={deliveryCode}
+                onChangeText={setDeliveryCode}
+                keyboardType="numeric"
+                maxLength={5} // Adjust based on your code length
+                placeholder="••••••"
+                className="bg-white px-4 py-3 rounded-lg border border-gray-300 text-center text-lg tracking-widest font-semibold"
+                placeholderTextColor="#ccc"
+              />
+
+              {/* Deliver Button */}
+              <TouchableOpacity
+                className="bg-green-600 py-3 mt-4 rounded-lg items-center flex-row justify-center"
+                onPress={() => deliverOrder(deliveryCode)}
+                disabled={!deliveryCode}
+              >
+                <Feather name="check" size={18} color="white" style={{ marginRight: 8 }} />
+                <Text className="text-white font-semibold">Mark As Delivered</Text>
+              </TouchableOpacity>
+            </View>
           )}
 
         </View>
