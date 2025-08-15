@@ -8,18 +8,18 @@ import {
   SafeAreaView,
 } from 'react-native';
 import { Feather, MaterialIcons } from '@expo/vector-icons';
-import MapView, { Marker } from 'react-native-maps';
 import * as Location from 'expo-location';
-import { useStripe } from '@stripe/stripe-react-native';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { useCart } from '../../hooks/useCart';
-import { placeOrder } from '../../services/checkoutService';
+import { placeOrder } from '../../services/paystackService';
 import BottomNavigation from "../../components/common/BottomNavigation";
 import { useNavigation } from "@react-navigation/native";
 import { showToast } from '../../services/toastService';
+import { usePaystack } from 'react-native-paystack-webview';
+
 
 export default function CheckoutScreen() {
-  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
   const [address, setAddress] = useState('');
   const [phone, setPhone] = useState('');
   const [selectedMethod, setSelectedMethod] = useState<'cash' | 'card' | ''>('');
@@ -27,10 +27,11 @@ export default function CheckoutScreen() {
   const [latitude, setLatitude] = useState<number | null>(null);
   const [longitude, setLongitude] = useState<number | null>(null);
   const navigation = useNavigation();
-  const stripe = useStripe();
   const router = useRouter();
   const params = useLocalSearchParams();
   const { cart, clearCart } = useCart();
+  const { popup } = usePaystack(); // ✅ valid hook usage
+
 
   useEffect(() => {
     if (params?.lat && params?.lng) {
@@ -57,40 +58,47 @@ export default function CheckoutScreen() {
 
   };
 
-  const handleCheckout = async () => {
-    if (!name || !address || !phone || !selectedMethod) {
-      showToast(
-        'error',
-        'Incomplete Details',
-        'Please complete all fields: name, address, phone number, and delivery method.'
-      );
-      return;
-    }
-  
+const handleCheckout = async () => {
+  if (!email || !address || !phone || !selectedMethod) {
+    showToast(
+      'error',
+      'Incomplete Details',
+      'Please complete all fields: email, address, phone number, and delivery method.'
+    );
+    return;
+  }
+
   if (!latitude || !longitude) {
     showToast('error', 'Location Required', 'Please select your delivery location on the map.');
     return;
   }
 
-  await placeOrder({
-    name,
-    address,
-    phone,
-    selectedMethod,
-    latitude,
-    longitude,
-    cartItems: cart.map(item => ({
-      id: item.id,
-      name: item.name,
-      price: item.price,
-      quantity: item.quantity,
-      image_name: item.image_name,
-    })),
-    stripe,
-    clearCart,
-    router,
-  });
-  navigation.navigate('OrderList');
+  try {
+    const { payment_url } = await placeOrder({
+      email,
+      address,
+      phone,
+      selectedMethod,
+      latitude,
+      longitude,
+      cartItems: cart.map(item => ({
+        id: item.id,
+        name: item.name,
+        quantity: item.quantity,
+        price: item.price
+      })),
+      clearCart // ✅ only if backend supports safe clearing
+    });
+
+    if (selectedMethod === 'card' && payment_url) {
+      navigation.navigate('PaystackCheckout', { url: payment_url });
+    } else {
+      navigation.navigate('OrderList');
+    }
+  } catch (error) {
+    console.error('Checkout error:', error);
+    showToast('error', 'Order Failed', 'Something went wrong while placing your order.');
+  }
 };
 const cartTotal = cart.reduce((acc, item) => acc + item.price * item.quantity, 0);
 
@@ -112,10 +120,10 @@ return (
           <View className="flex-row items-center">
             <Feather name="user" size={16} color="gray" style={{ marginRight: 8 }} />
             <TextInput
-              placeholder="Full Name"
+              placeholder="Email"
               placeholderTextColor="#9CA3AF"
-              value={name}
-              onChangeText={setName}
+              value={email}
+              onChangeText={setEmail}
               className="flex-1 border border-gray-300 rounded-md px-4 py-3 my-2 bg-white"
             />
           </View>

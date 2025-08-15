@@ -12,12 +12,6 @@
     "plugins": [
       "expo-secure-store",
       [
-        "@stripe/stripe-react-native",
-        {
-          "merchantIdentifier": "merchant.com.endframe.fruitpack"
-        }
-      ],
-      [
         "expo-location",
         {
           "locationAlwaysAndWhenInUsePermission": "Allow FruitPack to access your location in the background to support deliveries."

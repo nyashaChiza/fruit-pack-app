@@ -7,6 +7,7 @@ import OrderDetailScreen from "screens/customer/OrderDetailScreen";
 import OrderListScreen from "screens/customer/OrderListScreen";
 import LoginScreen from "screens/auth/LoginScreen";
 import SignupScreen from "screens/auth/SignupScreen";
+import PaystackCheckout from "screens/customer/PayStackWebView";
 
 const Stack = createNativeStackNavigator();
 
@@ -21,6 +22,7 @@ export default function CustomerStack() {
       <Stack.Screen name="Checkout" component={CheckoutScreen} />
       <Stack.Screen name="LoginScreen" component={LoginScreen} />
       <Stack.Screen name="SignupScreen" component={SignupScreen} />
+      <Stack.Screen name="PaystackCheckout" component={PaystackCheckout} />
     </Stack.Navigator>
   );
 }

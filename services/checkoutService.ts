@@ -1,35 +1,34 @@
-import { Stripe, initPaymentSheet, presentPaymentSheet } from '@stripe/stripe-react-native';
 import api from "./api";
 import { getToken } from "./authServices";
 import { CartItem } from '../types';
-import { Router } from 'expo-router/build/hooks';
+import  { Router }  from 'expo-router/build/hooks';
 import { showToast } from "services/toastService";
 
 
 type Prop = {
-  name: string;
+  email: string;
   address: string;
   phone: string;
   selectedMethod: 'cash' | 'card' | '';
   latitude: number | null;
   longitude: number | null;
   cartItems: CartItem[];
-  stripe: Stripe;
   clearCart: () => void;
   router: Router;
 };
-
-export const placeOrder = async ({
-  name,
+export const placeOrders = async ({
+  email,
   address,
   phone,
   selectedMethod,
   latitude,
   longitude,
   cartItems,
-  stripe,
   clearCart,
-  router,
+  navigateToCheckout: (url: string) => {
+        navigation.navigate('PaystackCheckout', { url });
+      },
+
 }: Prop) => {
   if (!name || !address || !phone || !selectedMethod) {
     showToast('error', 'Validation Error', 'Please fill in all required fields.');
@@ -51,7 +50,7 @@ export const placeOrder = async ({
     api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
 
     const payload = {
-      full_name: name,
+      email,
       address,
       latitude,
       longitude,
@@ -66,32 +65,24 @@ export const placeOrder = async ({
     };
 
     const response = await api.post('cart/checkout/', payload);
-    const { order_id, client_secret } = response.data;
 
     if (selectedMethod === 'card') {
-      const { error: initError } = await initPaymentSheet({
-        paymentIntentClientSecret: client_secret,
-        returnURL: 'fruitpack://OrderList',
-      });
+      const { payment_url } = response.data;
 
-      if (initError) throw new Error(initError.message);
-
-      const { error: paymentError } = await presentPaymentSheet();
-
-      if (paymentError) {
-        showToast('error', 'Payment Error', paymentError.message || 'Payment failed.');
-        return;
+      if (!payment_url) {
+        throw new Error('Payment URL not received.');
       }
 
-      showToast('success', 'Payment Successful', 'Your payment has been processed successfully.');
+      // Navigate to Paystack WebView screen
+      router.push({
+        pathname: '/paystack-checkout',
+        params: { url: payment_url },
+      });
     } else {
       showToast('success', 'Order Placed', 'Your order has been placed successfully.');
+      clearCart();
     }
-
-    clearCart();
   } catch (err: any) {
     showToast('error', 'Checkout Error', err.response?.data?.detail || 'Failed to place order.');
   }
 };
-
-
