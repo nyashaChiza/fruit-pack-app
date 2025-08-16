@@ -15,6 +15,7 @@ type AuthContextType = {
   token: string | null;
   loginUser: (username: string, password: string) => Promise<void>;
   signupUser: (email: string, username: string, fullName: string, password: string) => Promise<void>;
+  UpdateUser: (userId: number, email: string, username: string, fullName: string,role: string, password: string) => Promise<void>;
   logoutUser: () => Promise<void>;
   isLoading: boolean;
 };
@@ -51,6 +52,25 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     await api.post('users/', payload);
   };
 
+    const UpdateUser = async (
+    userId:number,
+    email: string,
+    username: string,
+    fullName: string,
+    role:string,
+    password: string
+  ) => {
+    const payload = {
+      email,
+      username,
+      full_name: fullName,
+      password,
+      role,
+      is_active: true,
+    };
+    await api.put(`/users/${userId}`, payload);
+  };
+
   const logoutUser = async () => {
     await logout(); // Clears SecureStore
     setUser(null);  // Resets context
@@ -75,7 +95,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   return (
     <AuthContext.Provider
-      value={{ user, token, loginUser, signupUser, logoutUser, isLoading }}
+      value={{ user, token, loginUser, signupUser, UpdateUser,logoutUser, isLoading }}
     >
       {children}
     </AuthContext.Provider>

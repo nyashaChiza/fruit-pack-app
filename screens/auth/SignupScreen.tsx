@@ -65,6 +65,7 @@ export default function SignupScreen() {
         <View className="flex-row items-center bg-green-50 rounded-lg mb-4 px-3 py-2">
           <Feather name="user" size={18} color="#4CAF50" style={{ marginRight: 6 }} />
           <TextInput
+            style={{ minHeight: 45 }}
             className="flex-1 text-base text-gray-700 py-3"
             placeholder="Full Name"
             placeholderTextColor="#8c9aa8ff"
@@ -77,6 +78,7 @@ export default function SignupScreen() {
         <View className="flex-row items-center bg-green-50 rounded-lg mb-4 px-3 py-2">
           <Feather name="at-sign" size={18} color="#4CAF50" style={{ marginRight: 6 }} />
           <TextInput
+            style={{ minHeight: 45 }}
             className="flex-1 text-base text-gray-700 py-3"
             placeholder="Username"
             placeholderTextColor="#8c9aa8ff"
@@ -90,6 +92,7 @@ export default function SignupScreen() {
         <View className="flex-row items-center bg-green-50 rounded-lg mb-4 px-3 py-2">
           <Feather name="mail" size={18} color="#4CAF50" style={{ marginRight: 6 }} />
           <TextInput
+            style={{ minHeight: 45 }}
             className="flex-1 text-base text-gray-700 py-3"
             placeholder="Email"
             placeholderTextColor="#8c9aa8ff"
@@ -104,6 +107,7 @@ export default function SignupScreen() {
         <View className="flex-row items-center bg-green-50 rounded-lg mb-4 px-3 py-2">
           <Feather name="lock" size={18} color="#4CAF50" style={{ marginRight: 6 }} />
           <TextInput
+            style={{ minHeight: 45 }}
             className="flex-1 text-base text-gray-800 py-3"
             placeholder="Password"
             placeholderTextColor="#8c9aa8ff"
@@ -118,6 +122,7 @@ export default function SignupScreen() {
         <View className="flex-row items-center bg-green-50 rounded-lg mb-4 px-3 py-2">
           <Feather name="lock" size={18} color="#4CAF50" style={{ marginRight: 6 }} />
           <TextInput
+            style={{ minHeight: 45 }}
             className="flex-1 text-base text-gray-800 py-3"
             placeholder="Verify Password"
             placeholderTextColor="#8c9aa8ff"

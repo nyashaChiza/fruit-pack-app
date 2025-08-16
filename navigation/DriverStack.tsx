@@ -9,6 +9,8 @@ import LoginScreen from "screens/auth/LoginScreen";
 import SignupScreen from "screens/auth/SignupScreen";
 import SystemClaimListScreen from "screens/driver/SystemClaimsListScreen";
 import ClaimDetailScreen from "screens/driver/ClaimsDetailScreen";
+import EditProfileScreen from "screens/driver/EditProfileScreen";
+import ProfileScreen from "screens/driver/ProfileScreen";
 
 const Stack = createNativeStackNavigator();
 
@@ -25,6 +27,8 @@ export default function DriverStack() {
       <Stack.Screen name="OrderDetails" component={OrderDetailsScreen} />
       <Stack.Screen name="LoginScreen" component={LoginScreen} />
       <Stack.Screen name="SignupScreen" component={SignupScreen} />
+      <Stack.Screen name="EditProfile" component={EditProfileScreen} />
+      <Stack.Screen name="DriverProfile" component={ProfileScreen} />
     </Stack.Navigator>
   );
 }
