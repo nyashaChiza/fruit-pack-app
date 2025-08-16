@@ -97,7 +97,7 @@ export default function CheckoutScreen() {
         })),
         clearCart // ✅ only if backend supports safe clearing
       });
-
+      clearCart();
       if (selectedMethod === 'card' && payment_url) {
         navigation.navigate('PaystackCheckout', { url: payment_url });
       } else {

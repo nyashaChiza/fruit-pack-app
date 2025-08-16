@@ -166,6 +166,7 @@ export default function CustomerHomeScreen() {
           <Feather name="search" size={20} color="#4CAF50" style={{ marginRight: 8 }} />
           <TextInput
             placeholder="Search fruits..."
+            style={{ minHeight: 40 }}
             placeholderTextColor="#4CAF50"
             className="flex-1 text-green-800 text-base py-2"
             value={searchTerm}
